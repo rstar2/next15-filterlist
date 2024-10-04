@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useTransition } from 'react';
 import { useFilters } from '@/providers/FilterProvider';
 import type { TaskStatus } from '@/types/task';
 import { SearchIcon } from './ui/icons/SearchIcon';
@@ -23,7 +23,8 @@ function SearchStatus({ searching }: { searching: boolean }) {
 
 export default function Search() {
   const params = useParams();
-  const { filters, isPending, updateFilters } = useFilters();
+  const { filters, updateFilters } = useFilters();
+  const [isPending, startTransition] = useTransition();
 
   return (
     <form className="relative flex w-full flex-col gap-1 sm:w-fit" key={params.tab as TaskStatus}>
@@ -33,7 +34,9 @@ export default function Search() {
       <input
         id="search"
         onChange={e => {
-          updateFilters({ q: e.target.value });
+          startTransition(() => {
+            updateFilters({ q: e.target.value });
+          });
         }}
         defaultValue={filters.q}
         className="w-full pl-10 sm:w-96"

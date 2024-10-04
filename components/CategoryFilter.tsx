@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useTransition } from 'react';
 import { useFilters } from '@/providers/FilterProvider';
 import ToggleButton from './ui/ToggleButton';
 import type { Category } from '@prisma/client';
@@ -11,8 +11,9 @@ type Props = {
 
 export default function CategoryFilter({ categoriesPromise }: Props) {
   const categoriesMap = use(categoriesPromise);
-  const { filters, isPending, updateFilters } = useFilters();
+  const { filters, updateFilters } = useFilters();
   const categories = filters.category;
+  const [isPending, startTransition] = useTransition();
 
   return (
     <div data-pending={isPending ? '' : undefined} className="flex flex-wrap gap-2">
@@ -26,8 +27,10 @@ export default function CategoryFilter({ categoriesPromise }: Props) {
                     return id !== categoryId;
                   })
                 : [...categories, categoryId];
-              updateFilters({
-                category: newCategories,
+              startTransition(() => {
+                updateFilters({
+                  category: newCategories,
+                });
               });
             }}
             key={category.id}
