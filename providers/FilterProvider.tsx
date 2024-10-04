@@ -33,9 +33,9 @@ export default function FilterProvider({ children }: { children: React.ReactNode
     Object.entries(newState).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach(v => {
-          return newSearchParams.append(key, v);
+          newSearchParams.append(key, v);
         });
-      } else if (value) {
+      } else if (value !== undefined) {
         newSearchParams.set(key, value);
       }
     });
