@@ -28,7 +28,7 @@ export default function Search() {
 
   return (
     <form className="relative flex w-full flex-col gap-1 sm:w-fit" key={params.tab as TaskStatus}>
-      <label className="font-semibold" htmlFor="search">
+      <label className="font-semibold uppercase" htmlFor="search">
         Search
       </label>
       <input
