@@ -1,7 +1,8 @@
 'use client';
 
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import React, { useTransition } from 'react';
+import { useFilters } from '@/providers/FilterProvider';
 import type { TaskStatus } from '@/types/task';
 import { SearchIcon } from './ui/icons/SearchIcon';
 import { SpinnerIcon } from './ui/icons/SpinnerIcon';
@@ -21,10 +22,8 @@ function SearchStatus({ searching }: { searching: boolean }) {
 }
 
 export default function Search() {
-  const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
-  const q = searchParams.get('q') || '';
+  const { filters, updateFilters } = useFilters();
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -36,12 +35,10 @@ export default function Search() {
         id="search"
         onChange={e => {
           startTransition(() => {
-            const newSearchParams = new URLSearchParams(searchParams.toString());
-            newSearchParams.set('q', e.target.value);
-            router.push(`?${newSearchParams.toString()}`);
+            updateFilters({ q: e.target.value });
           });
         }}
-        defaultValue={q}
+        defaultValue={filters.q}
         className="w-full pl-10 sm:w-96"
         name="q"
         placeholder="Search in task title or description..."
