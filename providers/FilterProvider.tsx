@@ -21,13 +21,24 @@ export default function FilterProvider({ children }: { children: React.ReactNode
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [optimisticFilters, setOptimisticFilters] = useOptimistic({
-    category: searchParams.getAll('category'),
-    q: searchParams.get('q') || undefined,
-  });
+  const [optimisticFilters, setOptimisticFilters] = useOptimistic(
+    {
+      category: searchParams.getAll('category'),
+      q: searchParams.get('q') || undefined,
+    },
+    (prevState, newFilters: Partial<Filters>) => {
+      return {
+        ...prevState,
+        ...newFilters,
+      };
+    },
+  );
 
   function updateFilters(updates: Partial<typeof optimisticFilters>) {
-    const newState = { ...optimisticFilters, ...updates };
+    const newState = {
+      ...optimisticFilters,
+      ...updates,
+    };
     const newSearchParams = new URLSearchParams();
 
     Object.entries(newState).forEach(([key, value]) => {
@@ -41,7 +52,7 @@ export default function FilterProvider({ children }: { children: React.ReactNode
     });
 
     startTransition(() => {
-      setOptimisticFilters(newState);
+      setOptimisticFilters(updates);
       router.push(`?${newSearchParams}`);
     });
   }
