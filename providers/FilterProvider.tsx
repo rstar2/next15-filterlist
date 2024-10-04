@@ -28,18 +28,15 @@ export default function FilterProvider({ children }: { children: React.ReactNode
 
   function updateFilters(updates: Partial<typeof optimisticFilters>) {
     const newState = { ...optimisticFilters, ...updates };
-    const newSearchParams = new URLSearchParams(searchParams);
+    const newSearchParams = new URLSearchParams();
 
     Object.entries(newState).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        newSearchParams.delete(key);
         value.forEach(v => {
           return newSearchParams.append(key, v);
         });
       } else if (value) {
         newSearchParams.set(key, value);
-      } else {
-        newSearchParams.delete(key);
       }
     });
 
