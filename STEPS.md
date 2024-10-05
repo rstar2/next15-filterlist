@@ -41,8 +41,8 @@
 - Suspense around projectDetails with skeleton, await inside.
 - Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
 - Suspense around tabs with skeleton, await inside.
-- Unblock the page.tsx by adding suspense around children.
 - Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.
+- Unblock the page.tsx by adding loading tsx children.
 - Showcase the result
 - Now we can show something on the screen while streaming in the components as they finish. Utilizing the shared compute load between server and client, and interact with what we have (fill search).
 
@@ -50,43 +50,38 @@ Our strategy: We are pushing data fetching down and displaying fallbacks while s
 
 ## Improve UX
 
-The ux is still not good here. We are not getting any feedback when we click things. 
+The ux is still not good here. We are not getting much feedback when we click things.
 
-### Mark active tab and read promise with use in Tab.tsx
+### Mark active tab and read promise with use in Tabs.tsx
 
 - Let's begin by seeing the currently active tab. Add useParams and get active tab. Make client component. We cannot have this async now, we have to fetch the data outside. Put the data outside.
 - But we don't want to get back to blocking our layout. Lets remove the await and pass it down to the Tabs as a promise.
 - Then we can read the promise with use() which will resolve it, and the component will suspend the same way allowing us to see the fallback.
-- Now we can see the active tabs.
-
-### Make table flash with startTransition in Tab.tsx
-
-- However when we click the tabs, we dont see anything happening.
-- What's happening is we are waiting for the await of the page.tsx to finish, so we cannot switch tabs. We could add a suspense with loading.tsx, but that would be of little value to the user. Let's instead show stale content while waiting. I like to think of it as picking between displaying pending state in the source or destination, the destination would be suspense.
-- Add prog-enh to onClick to Tab.tsx, startTransition router.push. Explain useTransition. Mark a state update as non-urgent and non-blocking and get pending state. How can we use this isPending?
-- Add data-pending=isPending.
-- Show group-has data-pending in page.tsx, show class group.
-- Show the result. Pending feedback while showing stale content.
-Credit to Sam Selikoff with his post on buildui blog for this pattern.
-
-### Make Tabs.tsx more responsive
-
-- Pay attention to the URL. It's not switching until the new table is done rendering on the server. Therefore we cannot see the active tab right away.
-- UseOptimistic is a great tool to handle this. It will take in a state to show no action is pending, and return an trigger function and optimistic value, and it will throw away the client side optimistic state is thrown away after the action completes, then settle to the "truth".
-- Add useOptimistic to Tabs.tsx and Tab.tsx. They are now way more responsive.
+- Now we can see the active tabs and navigate between them.
 
 ### Add a loading spinner to Search.tsx
 
-- Progressive enhancement of the base case search with onChange. Enable the spinner. Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done.
+- Progressive enhancement of the base case search with onChange. Enable the spinner.
+- Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
+- Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done.
 
 We are putting state in the URL. This is a common request because the current state of the app can be shareable and reloadable. But, it can be hard to coordinate state in the url with component state with i.e useEffect - instead the URL is now a single source of truth. We are lifting the state up, which is a well known pattern in React.
 
 ## Add CategoryFilter.tsx to layout.tsx
 
 - Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with a skeleton.
-- This component is filtering with searchParams again, using the URL as the state again. However, the filters are not responsive again.
+- This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we dont see anything happening.
+- What's happening is we are waiting for the await of the page.tsx to finish, so we cannot see the active filters.
+- Add startTransition router.push. How can we use this isPending?
+- Add data-pending=isPending.
+- Show group-has data-pending in page.tsx, show class group.
+- Show the result. Pending feedback while showing stale content.
+- Credit to Sam Selikoff with his post on buildui blog for this pattern.
+- Pay attention to the URL. It's not switching until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
+- UseOptimistic is a great tool to handle this. It will take in a state to show no action is pending, and return an trigger function and optimistic value, and it will throw away the client side optimistic state is thrown away after the action completes, then settle to the "truth".
+- Add useOptimistic to Tabs.tsx and Tab.tsx. They are now way more responsive.
+
 - Add useOptimistic to CategoryFilter.tsx, it also batches them like with the search! Can be cancelled if the user navigates away before the promise resolves.
-- Add data-pending. Optimistic UI should be called inside transitions anyway. Show the result.
 
 ## Cache() getCategoriesMap in categories.ts
 
@@ -100,7 +95,7 @@ This means that can keep using our common pattern of fetching data inside compon
 ## Turn on staleTimes in next.config.js
 
 - Every time we click a tab, filter, or search, we are rerunning the page.tsx table on the server, with the data fetch. We can cache this.
-- Cache the rsc payload for the route page.tsx (table) by turning on staleTimes in next.config.js. 
+- Cache the rsc payload for the route page.tsx (table) by turning on staleTimes in next.config.js.
 - Show the result. Click the same twice. This is a Next.js 15 feature.
 
 ## Final demo

@@ -8,7 +8,6 @@ import LoadTimeTracker from '@/components/LoadTimeTracker';
 import ProjectInfo from '@/components/ProjectInfo';
 import Search, { SearchSkeleton } from '@/components/Search';
 import Tabs, { TabsSkeleton } from '@/components/tabs/Tabs';
-import Skeleton from '@/components/ui/Skeleton';
 import ToggleButton from '@/components/ui/ToggleButton';
 import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
@@ -50,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Suspense>
             </FilterProvider>
           </Suspense>
-          <Suspense fallback={<Skeleton />}>{children}</Suspense>
+          {children}
         </div>
         <LoadTimeTracker />
       </body>

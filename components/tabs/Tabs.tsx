@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import React, { use, useOptimistic } from 'react';
+import React, { use } from 'react';
 import type { TaskStatus, TaskSummary } from '@/types/task';
 import { cn } from '@/utils/cn';
 import { getCategoryColor } from '@/utils/getCategoryColor';
@@ -15,7 +15,6 @@ type Props = {
 export default function Tabs({ taskSummaryPromise }: Props) {
   const taskSummary = use(taskSummaryPromise);
   const activeTab = useParams().tab as TaskStatus;
-  const [optimisticTab, setOptimisticTab] = useOptimistic(activeTab);
 
   const mapTasks = (status: TaskStatus) => {
     return (
@@ -41,28 +40,13 @@ export default function Tabs({ taskSummaryPromise }: Props) {
 
   return (
     <div className="flex gap-6 overflow-auto">
-      <Tab
-        header={`TODO (${getTaskCount('todo')})`}
-        activeTab={optimisticTab}
-        setOptimisticTab={setOptimisticTab}
-        tabId="todo"
-      >
+      <Tab header={`TODO (${getTaskCount('todo')})`} activeTab={activeTab} tabId="todo">
         {mapTasks('todo')}
       </Tab>
-      <Tab
-        header={`IN PROGRESS (${getTaskCount('inprogress')})`}
-        activeTab={optimisticTab}
-        setOptimisticTab={setOptimisticTab}
-        tabId="inprogress"
-      >
+      <Tab header={`IN PROGRESS (${getTaskCount('inprogress')})`} activeTab={activeTab} tabId="inprogress">
         {mapTasks('inprogress')}
       </Tab>
-      <Tab
-        header={`DONE (${getTaskCount('done')})`}
-        activeTab={optimisticTab}
-        setOptimisticTab={setOptimisticTab}
-        tabId="done"
-      >
+      <Tab header={`DONE (${getTaskCount('done')})`} activeTab={activeTab} tabId="done">
         {mapTasks('done')}
       </Tab>
     </div>
