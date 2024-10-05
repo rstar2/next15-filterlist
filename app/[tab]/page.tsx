@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import { ActionIcon } from '@/components/ui/icons/ActionIcon';
 import { getTasks } from '@/data/services/task';
-import type { TaskStatus } from '@/types/task';
+import { taskStatusSchema, type TaskStatus } from '@/types/task';
 import { cn } from '@/utils/cn';
 import { getCategoryColor } from '@/utils/getCategoryColor';
 
@@ -18,11 +18,14 @@ type PageProps = {
 
 export default async function TabPage({ params, searchParams }: PageProps) {
   const { tab } = await params;
-  const validStatuses: TaskStatus[] = ['todo', 'inprogress', 'done'];
-  if (!validStatuses.includes(tab)) {
+  const { q, category } = await searchParams;
+
+  try {
+    taskStatusSchema.parse(tab);
+  } catch (e) {
     notFound();
   }
-  const { q, category } = await searchParams;
+
   const data = await getTasks({
     categories: Array.isArray(category) ? category.map(Number) : category ? [Number(category)] : undefined,
     q,

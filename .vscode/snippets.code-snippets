@@ -1,3 +1,20 @@
 {
-
+    "suspense": {
+        "scope": "typescriptreact",
+        "prefix": "suspense",
+        "body": [
+            "<Suspense fallback={${1:< />}}>",
+            "${0}</Suspense>"
+        ],
+    }
+    ,
+    "tabsprops": {
+        "scope": "typescriptreact",
+        "prefix": "tabsprops",
+        "body": [
+            "type Props = {",
+            "  taskSummaryPromise: Promise<TaskSummary>;",
+            "};"
+        ],
+    }
 }

@@ -40,14 +40,14 @@ export async function getTaskSummary(): Promise<TaskSummary> {
   await cookies();
   await slow(2000);
 
+  const categoriesMap = await getCategoriesMap();
+
   const groupedTasks = await prisma.task.groupBy({
     _count: {
       id: true,
     },
     by: ['status', 'categoryId'],
   });
-
-  const categoriesMap = await getCategoriesMap();
 
   return groupedTasks.reduce((acc, task) => {
     const status = task.status as TaskStatus;
