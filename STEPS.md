@@ -27,14 +27,19 @@
 - Data fetching server side in a [tab] page.tsx based on the params.
 - And we are querying our db based on filters directly in the components and finishing the render there since they are server components. No React state.
 - Search is just submitting a query param with a get request
-- Tabs are navigating
-- App feels terrible because we are waiting for everything to render on the server and only getting the default browser spinner.
+- Tabs are navigating but very slowly because of the data fetches.
+- App feels terrible on initial load because we are waiting for everything to render on the server and only getting the default browser spinner.
 
-## Improve data fetching in layout.tsx
+## Improve the UX when switching tabs
 
 - Show the different data files just querying a db and using cookies() and slow()
 - Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
-- I'm blocked by the awaits in the layout and I cant show anything on the screen.
+- We are blocked by the await in page.tsx.
+- Unblock the page.tsx by adding loading tsx children.
+
+## Improve data fetching in layout.tsx
+
+- For the initial load, I'm blocked by the awaits in the layout and I cant show anything on the screen.
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
 - The first thorugh might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout, and the slowest call which is the page.tsx.
 - So, let's unblock the layout and push the data down from the layout to the components themselves, and show Suspense fallbacks.
@@ -42,7 +47,6 @@
 - Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
 - Suspense around tabs with skeleton, await inside.
 - Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.
-- Unblock the page.tsx by adding loading tsx children.
 - Showcase the result
 - Now we can show something on the screen while streaming in the components as they finish. Utilizing the shared compute load between server and client, and interact with what we have (fill search).
 
@@ -50,7 +54,7 @@ Our strategy: We are pushing data fetching down and displaying fallbacks while s
 
 ## Improve UX
 
-The ux is still not good here. We are not getting much feedback when we click things.
+The ux is still not good here. We are not seeing active tab and not getting feedback on search.
 
 ### Mark active tab and read promise with use in Tabs.tsx
 
@@ -63,6 +67,7 @@ The ux is still not good here. We are not getting much feedback when we click th
 
 - Progressive enhancement of the base case search with onChange. Enable the spinner.
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
+- Using the existing searchparams because I will be adding more in the next step.
 - Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done.
 
 We are putting state in the URL. This is a common request because the current state of the app can be shareable and reloadable. But, it can be hard to coordinate state in the url with component state with i.e useEffect - instead the URL is now a single source of truth. We are lifting the state up, which is a well known pattern in React.
