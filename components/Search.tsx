@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useQueryState } from 'nuqs';
 import React, { useTransition } from 'react';
-import { searchParams } from '@/searchParams';
+import { searchParams } from '@/types/searchParams';
 import type { TaskStatus } from '@/types/task';
 import { SearchIcon } from './ui/icons/SearchIcon';
 import { SpinnerIcon } from './ui/icons/SpinnerIcon';
