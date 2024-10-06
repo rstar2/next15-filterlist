@@ -3,7 +3,7 @@
 ## Setup and starting point
 
 - This is a project task manager sort of thing. My designer Eileen Røsholt has designed the UI, and it's based on something we made in our current project.
-- The setup is of course Next.js App router, prisma and an Azure DB, tailwind CSS.
+- The setup is of course Next.js App router, prisma and an Azure DB cause its free on my company azure account, tailwind CSS.
 - Demo app: Very slow load, slowed down data fetches on purpose.
 - But, it's actually not bad. This is all html, navigations and a form for the search, and things work. And there is no JS on the client side. Works without js.
 - Try out tabs, try search with a basic form, see the result in the table.
@@ -41,7 +41,7 @@
 
 - For the initial load, I'm blocked by the awaits in the layout and I cant show anything on the screen.
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
-- The first thorugh might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout, and the slowest call which is the page.tsx.
+- The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout, and the slowest call which is the page.tsx.
 - So, let's unblock the layout and push the data down from the layout to the components themselves, and show Suspense fallbacks.
 - Suspense around projectDetails with skeleton, await inside.
 - Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
@@ -65,10 +65,11 @@ The ux is still not good here. We are not seeing active tab and not getting feed
 
 ### Add a loading spinner to Search.tsx
 
-- Progressive enhancement of the base case search with onChange. Enable the spinner.
+- Progressive enhancement of the base case search with onChange. Enable the spinner. When this is hydrated by js, we have the onchange and the spinner.
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
-- Using the existing searchparams because I will be adding more in the next step.
-- Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done.
+- Use pending state to display user while waiting for the navigation to finish.
+- Using the existing search params because I will be adding more in the next step.
+- Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done. Few pushes to the browser history.
 - Add key to form to reset it between tabs
 
 We are putting state in the URL. This is a common request because the current state of the app can be shareable and reloadable. But, it can be hard to coordinate state in the url with component state with i.e useEffect - instead the URL is now a single source of truth. We are lifting the state up, which is a well known pattern in React.
@@ -76,18 +77,19 @@ We are putting state in the URL. This is a common request because the current st
 ## Add CategoryFilter.tsx to layout.tsx
 
 - Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with a skeleton.
-- This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we dont see anything happening.
+- This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we don't see anything happening.
 - What's happening is we are waiting for the await of the page.tsx to finish, so we cannot see the active filters.
 - Add startTransition router.push. How can we use this isPending?
-- Add data-pending=isPending.
+- Add data-pending=isPending attribute.
 - Show group-has data-pending in page.tsx, show class group.
 - Show the result. Pending feedback while showing stale content.
-- Credit to Sam Selikoff with his post on buildui blog for this pattern.
 - Pay attention to the URL. It's not switching until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
 - UseOptimistic is a great tool to handle this. It will take in a state to show no action is pending, and return an trigger function and optimistic value, and it will throw away the client side optimistic state is thrown away after the action completes, then settle to the "truth".
 - Add useOptimistic to Tabs.tsx and Tab.tsx. They are now way more responsive.
+- Add useOptimistic to CategoryFilter.tsx.
+- Credit to Sam Selikoff with his post on buildui blog for this pattern.
 
-- Add useOptimistic to CategoryFilter.tsx, it also batches them like with the search! Can be cancelled if the user navigates away before the promise resolves.
+The categories are instant and don't depend in the network. Refreshing the page will show the correct state. It also batches them like with the search! Can be cancelled if the user navigates away before the promise resolves.
 
 ## Cache() getCategoriesMap in categories.ts
 
@@ -108,7 +110,7 @@ This means that can keep using our common pattern of fetching data inside compon
 
 - Reload page. Interact with tabs and filters while streaming in the server components as they load. Switch tabs back and fourth. Click multiple filters.
 - Greatly improved UX even though the data fetches are still extremely slow. App feels super responsive.
-- And this is very robust: progressively enhanced, we wont have race conditions because of useTransitions, the app is reloadable and shareable. And there is a low amount of js, using it only where needed.
+- And this is very robust: progressively enhanced, we wont have race conditions because of useTransitions, the app is reloadable and shareable. And there is a low amount of js, using it only where needed, the buttons work with onclick while we are streaming in the server components.
 - No useEffects or useStates in sight. We are making interactive apps without it. In the new React world with Next.js 15 we don't need it as much.
 
 ## Test lighthouse scores
@@ -132,7 +134,8 @@ This means that can keep using our common pattern of fetching data inside compon
 - LCP: LCP is our PPR'd project details, so the score is even better. Check ms for LCP in logs.
 - This can be very impactful on a bigger application with larger chunks of static content.
 
-## (Do random other things for improvement)
+## Showcase other things for improvement
 
+- Some final things to note
 - Turn off slow and feel the UX. Suspense boundaries are omitted cause the app is fast. However we know its okay if it isn't.
-- Show filters are being discarded when clicking between them. There is a branch here called filter-provider where I've fixed this and simplified the code by extracting to a optimistic search param provider which React Context which batches all of them together. Check that our if you're interested.
+- Show filters are being discarded when clicking between them if the transition is still ongoing. Checkout branch here called filter-provider where I've fixed this and simplified the code by extracting to a optimistic search param provider which React Context which batches all of them together. You could put pagination, sorting, and other things in here as well.
