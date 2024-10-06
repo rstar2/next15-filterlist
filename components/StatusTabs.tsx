@@ -5,14 +5,15 @@ import React, { use } from 'react';
 import type { TaskStatus, TaskSummary } from '@/types/task';
 import { cn } from '@/utils/cn';
 import { getCategoryColor } from '@/utils/getCategoryColor';
-import Skeleton from '../ui/Skeleton';
-import Tab from './Tab';
+import Skeleton from './ui/Skeleton';
+import NavTab from './ui/nav-tabs/NavTab';
+import NavTabs from './ui/nav-tabs/NavTabs';
 
 type Props = {
   taskSummaryPromise: Promise<TaskSummary>;
 };
 
-export default function Tabs({ taskSummaryPromise }: Props) {
+export default function StatusTabs({ taskSummaryPromise }: Props) {
   const taskSummary = use(taskSummaryPromise);
   const activeTab = useParams().tab as TaskStatus;
 
@@ -39,21 +40,26 @@ export default function Tabs({ taskSummaryPromise }: Props) {
   };
 
   return (
-    <div className="flex gap-6 overflow-auto">
-      <Tab header={`TODO (${getTaskCount('todo')})`} activeTab={activeTab} tabId="todo">
+    <NavTabs>
+      <NavTab href="/todo" header={`TODO (${getTaskCount('todo')})`} activeTab={activeTab} tabId="todo">
         {mapTasks('todo')}
-      </Tab>
-      <Tab header={`IN PROGRESS (${getTaskCount('inprogress')})`} activeTab={activeTab} tabId="inprogress">
+      </NavTab>
+      <NavTab
+        href="/inprogress"
+        header={`IN PROGRESS (${getTaskCount('inprogress')})`}
+        activeTab={activeTab}
+        tabId="inprogress"
+      >
         {mapTasks('inprogress')}
-      </Tab>
-      <Tab header={`DONE (${getTaskCount('done')})`} activeTab={activeTab} tabId="done">
+      </NavTab>
+      <NavTab href="/done" header={`DONE (${getTaskCount('done')})`} activeTab={activeTab} tabId="done">
         {mapTasks('done')}
-      </Tab>
-    </div>
+      </NavTab>
+    </NavTabs>
   );
 }
 
-export function TabsSkeleton() {
+export function StatusTabsSkeleton() {
   return (
     <div className="flex gap-6 overflow-auto">
       <Skeleton className="h-[169px] sm:h-48" />

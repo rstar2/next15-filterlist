@@ -6,8 +6,7 @@
             "<Suspense fallback={${1:< />}}>",
             "${0}</Suspense>"
         ],
-    }
-    ,
+    },
     "tabsprops": {
         "scope": "typescriptreact",
         "prefix": "tabsprops",

@@ -12,7 +12,7 @@
 
 ## Review lighthouse scores
 
-- Run lighthouse.
+- Open pre-run lighthouse tab.
 - Show impact of each by hovering circle.
 - FCP: Bad since we are showing nothing until everything. Check the logs for the true value. Fix mistakenly good scores.
 - LCP: Bad, out LCP is shown together with everything else. Check the logs for the true value. Fix mistakenly good scores.
@@ -25,10 +25,10 @@
 ## Go through the code
 
 - Async layout.tsx server component
-- Async [tab] page.tsx server components, we are querying our db based on filters directly based on the filters inside this server component.
-- Search is just submitting a query param with a get request using a form.
-- Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
 - Show the different data files just querying a db and using cookies() and slow()
+- Search is just submitting a query param with a get request using a form.
+- Async [tab] page.tsx server components, we are querying our db based on filters directly based on the filters inside this server component.
+- Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
 
 ## Improve the UX when switching tabs
 
@@ -42,30 +42,32 @@
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
 - The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout.
 - So, let's push the data down from the layout to the components themselves, and show Suspense fallbacks.
-- Suspense around projectDetails with skeleton, await inside.
+- Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx. Show the result.
+- Suspense around projectDetails with skeleton.
 - Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
-- Suspense around tabs with skeleton, await inside.
-- (Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.)
+- Suspense around tabs with skeleton.
+- Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.
 - Showcase the result.
 
 Now we can show something on the screen while streaming in the components as they finish. Utilizing the shared compute load between server and client, and interact with what we have (fill search). We are pushing data fetching down and displaying fallbacks while streaming in the RSC's. All components fetch in parallel in this case since they are independent, reducing total load time. If they did depend on each other, we could have made more levels of suspenses inside each, streaming sequentially. Each component is now responsible for their own data, making them composable.
 
 ## Improve UX
 
-The ux is still not good here. We are not seeing active tab and not getting feedback on search, and its doing a full page reload.
+The ux is still not good here. We are not seeing active tab and the search is doing a full page reload.
 
 ### Mark active tab and read promise with use in Tabs.tsx
 
-- Let's begin by seeing the currently active tab. Add useParams and get active tab. Make client component. We cannot have this async now, we have to fetch the data outside. Put the data outside.
+- Let's continue by seeing the currently active tab. Add useParams and get active tab. Make client component. We cannot have this async now, we have to fetch the data outside. Put the data outside.
 - But we don't want to get back to blocking our layout. Lets remove the await and pass it down to the Tabs as a promise.
 - Then we can read the promise with use() which will resolve it, and the component will suspend the same way allowing us to see the fallback.
 - Now we can see the active tabs and navigate between them.
 
 ### Add a loading spinner to Search.tsx
 
-- Progressive enhancement of the base case search with onChange. Enable the spinner. When this is hydrated by js, we have the onchange and the spinner.
+- Progressive enhancement of the base case search with onChange, add router and searchParams.
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
-- Use pending state to display user while waiting for the navigation to finish.
+- Use pending state to display user while waiting for the navigation to finish, which is the await in the table component.
+- Enable the spinner. When this is hydrated by js, we have the onchange and the spinner.
 - Using the existing search params because I will be adding more in the next step.
 - Pay attention to the url - startTransition also batches all state updates, or keystrokes, and executes all of them once they are all done. Few pushes to the browser history.
 - Add key to form to reset it between tabs
@@ -76,25 +78,26 @@ We are putting state in the URL. This is a common request because the current st
 
 - Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with a skeleton.
 - This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we don't see anything happening.
-- What's happening is we are waiting for the await of the page.tsx to finish, so we cannot see the active filters.
+- Pay attention to the URL. It's not switching until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
+- What's happening is we are waiting for the await of the page.tsx.
 - Add startTransition router.push. How can we use this isPending?
-- Add data-pending=isPending attribute.
+- Add data-pending=isPending attribute. Instead of creating a global state manager, we can just use css.
 - Show group-has data-pending in page.tsx, show class group.
 - Show the result. Pending feedback while showing stale content.
-- Pay attention to the URL. It's not switching until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
-- UseOptimistic is a great tool to handle this. It will take in a state to show no action is pending, and return an trigger function and optimistic value, and it will throw away the client side optimistic state is thrown away after the action completes, then settle to the "truth".
-- Add useOptimistic to Tabs.tsx and Tab.tsx. They are now way more responsive.
+- What were gonna use to fix the togglebuttons, is useOptimistic, it is a great tool to handle this. It will take in a state to show no action is pending, and return an trigger function and optimistic value.
 - Add useOptimistic to CategoryFilter.tsx.
+- UseOptimistic will throw away the client side optimistic state after the navigation completes, then settle to the "truth" which is the URL.
 - Credit to Sam Selikoff with his post on buildui blog for this pattern.
 
-The categories are instant and don't depend in the network. Refreshing the page will show the correct state. It also batches them like with the search! Can be cancelled if the user navigates away before the promise resolves.
+The categories are instant and don't depend in the network. Refreshing the page will show the correct state. It also batches them like with the search!
 
 ## Cache() getCategoriesMap in categories.ts
 
 - We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show console logs 2x.
 - We can deduplicate this since it's running in the same render.
-- Add cache() to getCategoriesMap in categories.ts. Show console logs 1x, reduced load time.
+- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. Show console logs 1x.
 - This is also good for using inside dynamic metadata.
+- The load time is actually reduced by 500ms because the getTaskSummary is reusing the prepared data from the getCategoriesMap called by categoryFilter.
 
 This means that can keep using our common pattern of fetching data inside components, similar to how we would use useQuery in a client side app. This deduplication automatically happening with fetch requests by the way.
 
@@ -106,10 +109,10 @@ This means that can keep using our common pattern of fetching data inside compon
 
 ## Final demo
 
-- Reload page. Interact with tabs and filters while streaming in the server components as they load. Switch tabs back and fourth. Click multiple filters.
-- Greatly improved UX even though the data fetches are still extremely slow. App feels super responsive.
+- Reload page. Interact with tabs and filters while streaming in the server components as they load. Switch tabs back and fourth. Click multiple filters. Refresh the page.
+- Greatly improved UX. Even though the data fetches are still extremely slow, the app feels super responsive.
 - And this is very robust: progressively enhanced, we wont have race conditions because of useTransitions, the app is reloadable and shareable. And there is a low amount of js, using it only where needed, the buttons work with onclick while we are streaming in the server components.
-- No useEffects or useStates in sight. We are making interactive apps without it. In the new React world with Next.js 15 we don't need it as much.
+- No useEffects or useStates in sight. We are making interactive apps without them in this new world of React and Next.js.
 
 ## Test lighthouse scores
 
@@ -130,10 +133,11 @@ This means that can keep using our common pattern of fetching data inside compon
 ## Test lighthouse scores again
 
 - LCP: LCP is our PPR'd project details, so the score is even better. Check ms for LCP in logs.
-- This can be very impactful on a bigger application with larger chunks of static content.
+ontent is shown earlier.
+- And its nice as a user. And this can be very impactful on a bigger application with larger chunks of static content.
 
 ## Showcase other things for improvement
 
 - Some final things to note
-- Turn off slow and feel the UX. Suspense boundaries are omitted cause the app is fast. However we know its okay if it isn't.
 - Show filters are being discarded when clicking between them if the transition is still ongoing. Checkout branch here called filter-provider where I've fixed this and simplified the code by extracting to a optimistic search param provider which React Context which batches all of them together. You could put pagination, sorting, and other things in here as well. And there are libraries that can do this, for example nuqs.
+- Turn off slow and feel the UX. Suspense boundaries are omitted cause the app is fast. However we know its okay if it isn't.

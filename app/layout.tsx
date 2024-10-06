@@ -7,7 +7,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import LoadTimeTracker from '@/components/LoadTimeTracker';
 import ProjectInfo from '@/components/ProjectInfo';
 import Search, { SearchSkeleton } from '@/components/Search';
-import Tabs, { TabsSkeleton } from '@/components/tabs/Tabs';
+import StatusTabs, { StatusTabsSkeleton } from '@/components/StatusTabs';
 import ToggleButton from '@/components/ui/toggle-group/ToggleButton';
 import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
@@ -34,8 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           <div className="flex flex-col gap-6">
             <h2>Task list</h2>
-            <Suspense fallback={<TabsSkeleton />}>
-              <Tabs taskSummaryPromise={taskSummary} />
+            <Suspense fallback={<StatusTabsSkeleton />}>
+              <StatusTabs taskSummaryPromise={taskSummary} />
             </Suspense>
           </div>
           <div className="h-[1px] bg-primary" />
