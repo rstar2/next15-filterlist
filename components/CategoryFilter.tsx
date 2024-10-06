@@ -2,7 +2,7 @@
 
 import { useQueryState } from 'nuqs';
 import React, { use, useTransition } from 'react';
-import { searchParams } from '@/searchParams';
+import { searchParams } from '@/types/searchParams';
 import ToggleButton from './ui/ToggleButton';
 import type { Category } from '@prisma/client';
 
