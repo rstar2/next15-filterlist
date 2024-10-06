@@ -2,12 +2,14 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { createContext, useOptimistic, useTransition } from 'react';
+import { z } from 'zod';
 
-type Filters = {
-  category: string[];
-  q: string | undefined;
-};
+const filterSchema = z.object({
+  category: z.array(z.string()).default([]).optional(),
+  q: z.string().default('').optional(),
+});
 
+type Filters = z.infer<typeof filterSchema>;
 type FilterContextType = {
   filters: Filters;
   isPending: boolean;
@@ -19,13 +21,14 @@ export const FilterContext = createContext<FilterContextType | undefined>(undefi
 export default function FilterProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const filters = filterSchema.safeParse({
+    category: searchParams.getAll('category'),
+    q: searchParams.get('q') || undefined,
+  });
 
+  const [isPending, startTransition] = useTransition();
   const [optimisticFilters, setOptimisticFilters] = useOptimistic(
-    {
-      category: searchParams.getAll('category'),
-      q: searchParams.get('q') || undefined,
-    },
+    filters.data,
     (prevState, newFilters: Partial<Filters>) => {
       return {
         ...prevState,
@@ -52,13 +55,13 @@ export default function FilterProvider({ children }: { children: React.ReactNode
     });
 
     startTransition(() => {
-      setOptimisticFilters(updates);
+      setOptimisticFilters(updates || {});
       router.push(`?${newSearchParams}`);
     });
   }
 
   return (
-    <FilterContext.Provider value={{ filters: optimisticFilters, isPending, updateFilters }}>
+    <FilterContext.Provider value={{ filters: optimisticFilters || {}, isPending, updateFilters }}>
       {children}
     </FilterContext.Provider>
   );
