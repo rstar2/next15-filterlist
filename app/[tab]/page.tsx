@@ -2,23 +2,23 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import { ActionIcon } from '@/components/ui/icons/ActionIcon';
 import { getTasks } from '@/data/services/task';
+import { searchParamsCache } from '@/searchParams';
 import { taskStatusSchema, type TaskStatus } from '@/types/task';
 import { cn } from '@/utils/cn';
 import { getCategoryColor } from '@/utils/getCategoryColor';
+import type { SearchParams } from 'nuqs/parsers';
 
 type PageProps = {
   params: Promise<{
     tab: TaskStatus;
   }>;
-  searchParams: Promise<{
-    q?: string;
-    category?: string | string[];
-  }>;
+  searchParams: Promise<SearchParams>;
 };
 
 export default async function TabPage({ params, searchParams }: PageProps) {
   const { tab } = await params;
-  const { q, category } = await searchParams;
+  const searchParamsResolved = await searchParams;
+  const { q, category } = searchParamsCache.parse(searchParamsResolved);
 
   try {
     taskStatusSchema.parse(tab);

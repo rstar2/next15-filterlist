@@ -11,7 +11,6 @@ import Tabs, { TabsSkeleton } from '@/components/tabs/Tabs';
 import ToggleButton from '@/components/ui/ToggleButton';
 import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
-import FilterProvider from '@/providers/FilterProvider';
 import { cn } from '@/utils/cn';
 import type { Metadata } from 'next';
 
@@ -40,14 +39,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           <div className="h-[1px] bg-primary" />
           <Suspense>
-            <FilterProvider>
-              <Suspense fallback={<SearchSkeleton />}>
-                <Search />
-              </Suspense>
-              <Suspense fallback={<ToggleButton disabled>Loading...</ToggleButton>}>
-                <CategoryFilter categoriesPromise={categories} />
-              </Suspense>
-            </FilterProvider>
+            <Suspense fallback={<SearchSkeleton />}>
+              <Search />
+            </Suspense>
+            <Suspense fallback={<ToggleButton disabled>Loading...</ToggleButton>}>
+              <CategoryFilter categoriesPromise={categories} />
+            </Suspense>
           </Suspense>
           {children}
         </div>

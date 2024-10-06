@@ -1,7 +1,8 @@
 'use client';
 
+import { useQueryState } from 'nuqs';
 import React, { use, useTransition } from 'react';
-import { useFilters } from '@/providers/FilterProvider';
+import { searchParams } from '@/searchParams';
 import ToggleButton from './ui/ToggleButton';
 import type { Category } from '@prisma/client';
 
@@ -11,9 +12,14 @@ type Props = {
 
 export default function CategoryFilter({ categoriesPromise }: Props) {
   const categoriesMap = use(categoriesPromise);
-  const { filters, updateFilters } = useFilters();
-  const categories = filters.category;
   const [isPending, startTransition] = useTransition();
+  const [categories, setCategories] = useQueryState(
+    'category',
+    searchParams.category.withOptions({
+      shallow: false,
+      startTransition,
+    }),
+  );
 
   return (
     <div data-pending={isPending ? '' : undefined} className="flex flex-wrap gap-2">
@@ -27,11 +33,7 @@ export default function CategoryFilter({ categoriesPromise }: Props) {
                     return id !== categoryId;
                   })
                 : [...categories, categoryId];
-              startTransition(() => {
-                updateFilters({
-                  category: newCategories,
-                });
-              });
+              setCategories(newCategories);
             }}
             key={category.id}
             active={categories.includes(category.id.toString())}
