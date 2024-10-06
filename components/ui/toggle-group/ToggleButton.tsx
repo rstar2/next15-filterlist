@@ -23,7 +23,7 @@ export default function ToggleButton({
       type={type}
       className={cn(
         active ? activeClass : inactiveClass,
-        'disabled:border-gray w-fit rounded border border-primary px-4 py-2 disabled:opacity-50',
+        'w-fit rounded border border-primary px-4 py-2 disabled:border-gray disabled:opacity-50',
       )}
     >
       {children}
