@@ -53,9 +53,7 @@ export default function FilterProvider({ children }: { children: React.ReactNode
 
     startTransition(() => {
       setOptimisticFilters(updates);
-      router.push(`?${newSearchParams}`, {
-        scroll: false,
-      });
+      router.push(`?${newSearchParams}`);
     });
   }
 
