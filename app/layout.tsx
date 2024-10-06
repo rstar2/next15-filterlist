@@ -8,7 +8,7 @@ import LoadTimeTracker from '@/components/LoadTimeTracker';
 import ProjectInfo from '@/components/ProjectInfo';
 import Search, { SearchSkeleton } from '@/components/Search';
 import Tabs, { TabsSkeleton } from '@/components/tabs/Tabs';
-import ToggleButton from '@/components/ui/ToggleButton';
+import ToggleButton from '@/components/ui/toggle-group/ToggleButton';
 import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
 import FilterProvider from '@/providers/FilterProvider';

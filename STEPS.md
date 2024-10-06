@@ -19,42 +19,40 @@
 - TBT: 0 since no JS, responsive page, no uncanny valley since default elements.
 - CLS: 0 since everything is painted at once.
 - Speed index bad since it measures incrementally how much content is shown, but we have nothing until everything is shown.
-- Overall metrics terrible and UX is definitely not good.
+- Overall metrics terrible.
+- App feels terrible on initial load because we are waiting for everything to render on the server and only getting the default browser spinner.
 
 ## Go through the code
 
-- Async components, async layout
-- Data fetching server side in a [tab] page.tsx based on the params.
-- And we are querying our db based on filters directly in the components and finishing the render there since they are server components. No React state.
-- Search is just submitting a query param with a get request
-- Tabs are navigating but very slowly because of the data fetches.
-- App feels terrible on initial load because we are waiting for everything to render on the server and only getting the default browser spinner.
+- Async layout.tsx server component
+- Async [tab] page.tsx server components, we are querying our db based on filters directly based on the filters inside this server component.
+- Search is just submitting a query param with a get request using a form.
+- Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
+- Show the different data files just querying a db and using cookies() and slow()
 
 ## Improve the UX when switching tabs
 
-- Show the different data files just querying a db and using cookies() and slow()
-- Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
-- We are blocked by the await in page.tsx.
-- Unblock the page.tsx by adding loading tsx children.
+- Lets improve the UX of these tabs.
+- Tabs are navigating but very slowly, because we are waiting for the await for the table data in page.tsx to finish.
+- Let's unblock the page.tsx by adding loading.tsx inside /[tab] to create an implicit suspense boundary.
 
 ## Improve data fetching in layout.tsx
 
 - For the initial load, I'm blocked by the awaits in the layout and I cant show anything on the screen.
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
-- The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout, and the slowest call which is the page.tsx.
-- So, let's unblock the layout and push the data down from the layout to the components themselves, and show Suspense fallbacks.
+- The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout.
+- So, let's push the data down from the layout to the components themselves, and show Suspense fallbacks.
 - Suspense around projectDetails with skeleton, await inside.
 - Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
 - Suspense around tabs with skeleton, await inside.
-- Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.
-- Showcase the result
-- Now we can show something on the screen while streaming in the components as they finish. Utilizing the shared compute load between server and client, and interact with what we have (fill search).
+- (Suspense Search because SearchParams witch skeleton because SearchParams are dynamic.)
+- Showcase the result.
 
-Our strategy: We are pushing data fetching down and displaying fallbacks while streaming in the RSC's. All components fetch in parallel in this case since they are independent, reducing total load time. If they did depend on each other, we could have made more levels of suspenses inside each, streaming sequentially. Each component is now responsible for their own data, making them composable.
+Now we can show something on the screen while streaming in the components as they finish. Utilizing the shared compute load between server and client, and interact with what we have (fill search). We are pushing data fetching down and displaying fallbacks while streaming in the RSC's. All components fetch in parallel in this case since they are independent, reducing total load time. If they did depend on each other, we could have made more levels of suspenses inside each, streaming sequentially. Each component is now responsible for their own data, making them composable.
 
 ## Improve UX
 
-The ux is still not good here. We are not seeing active tab and not getting feedback on search.
+The ux is still not good here. We are not seeing active tab and not getting feedback on search, and its doing a full page reload.
 
 ### Mark active tab and read promise with use in Tabs.tsx
 
@@ -138,4 +136,4 @@ This means that can keep using our common pattern of fetching data inside compon
 
 - Some final things to note
 - Turn off slow and feel the UX. Suspense boundaries are omitted cause the app is fast. However we know its okay if it isn't.
-- Show filters are being discarded when clicking between them if the transition is still ongoing. Checkout branch here called filter-provider where I've fixed this and simplified the code by extracting to a optimistic search param provider which React Context which batches all of them together. You could put pagination, sorting, and other things in here as well.
+- Show filters are being discarded when clicking between them if the transition is still ongoing. Checkout branch here called filter-provider where I've fixed this and simplified the code by extracting to a optimistic search param provider which React Context which batches all of them together. You could put pagination, sorting, and other things in here as well. And there are libraries that can do this, for example nuqs.
