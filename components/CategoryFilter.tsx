@@ -22,7 +22,7 @@ export default function CategoryFilter({ categoriesPromise }: Props) {
   );
 
   return (
-    <div data-pending={isPending ? '' : undefined} className="flex flex-wrap gap-2">
+    <div data-pending={isPending ? '' : undefined}>
       <ToggleGroup
         options={Object.values(categoriesMap).map(category => {
           return {
