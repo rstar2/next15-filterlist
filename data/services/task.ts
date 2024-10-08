@@ -10,7 +10,7 @@ export async function getTasks(filter?: { q?: string; status?: TaskStatus; categ
   console.log('getTasks', filter);
 
   await cookies();
-  await slow(3000);
+  await slow(2000);
 
   return prisma.task.findMany({
     include: {
@@ -38,7 +38,7 @@ export async function getTaskSummary(): Promise<TaskSummary> {
   console.log('getTaskSummary');
 
   await cookies();
-  await slow(2000);
+  await slow(1500);
 
   const categoriesMap = await getCategoriesMap();
 

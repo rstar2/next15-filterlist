@@ -3,17 +3,33 @@
         "scope": "typescriptreact",
         "prefix": "suspense",
         "body": [
-            "<Suspense fallback={${1:< />}}>",
-            "${0}</Suspense>"
+            "<Suspense fallback={${1:${TM_SELECTED_TEXT} }}>",
+            "${TM_SELECTED_TEXT}",
+            "</Suspense>"
         ],
     },
-    "tabsprops": {
+    "newSearchParams": {
         "scope": "typescriptreact",
-        "prefix": "tabsprops",
+        "prefix": "newSearchParams",
         "body": [
-            "type Props = {",
-            "  taskSummaryPromise: Promise<TaskSummary>;",
-            "};"
+            "const newSearchParams = new URLSearchParams(searchParams.toString());",
+            "newSearchParams.set('q', e.target.value);"
         ],
+    },
+    "pushRouter": {
+        "scope": "typescriptreact",
+        "prefix": "pushRouter",
+        "body": [
+            "router.push(`?${newSearchParams.toString()}`, {",
+            "  scroll: false,",
+            "});"
+        ]
+    },
+    "useTransition": {
+        "scope": "typescriptreact",
+        "prefix": "transition",
+        "body": [
+            "const [isPending, startTransition] = useTransition();"
+        ]
     }
 }
