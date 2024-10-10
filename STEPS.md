@@ -72,6 +72,7 @@ The ux is still not good here. We are not seeing active tab and the search is do
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
 - Use pending state to display user while waiting for the navigation to finish, which is the await in the table component.
 - Enable the spinner, while we are transitioning, we can see it. When this is hydrated by js, we have the onchange and the spinner.
+- (Using a transition also batches the key strokes, leaving only one entry in the history.)
 
 We are putting state in the URL. This is a common request because the current state of the app can be shareable and reloadable. But, it can be hard to coordinate state in the url with component state with i.e useEffect - instead the URL is now a single source of truth, by lifting the state up, which is a well known pattern in React.
 
@@ -89,6 +90,7 @@ We are putting state in the URL. This is a common request because the current st
 - Add useOptimistic to CategoryFilter.tsx.
 - UseOptimistic will throw away the client side optimistic state after the navigation completes, then settle to the "truth" which is the URL.
 - Credit to Sam Selikoff with his post on buildui blog for this pattern.
+- (Batchign again, only updating once we are done selecting, leaving only one entry in the history.)
 
 The categories are instant and don't depend in the network. Refreshing the page will show the correct state.
 

@@ -9,13 +9,18 @@ import { SpinnerIcon } from './ui/icons/SpinnerIcon';
 
 function SearchStatus({ searching }: { searching: boolean }) {
   return (
-    <div aria-hidden className="absolute left-4 top-[41px]">
+    <div
+      aria-label={searching ? 'Searching...' : 'Search'}
+      aria-live="polite"
+      aria-busy={searching}
+      className="absolute left-4 top-[41px]"
+    >
       {searching ? (
         <div className="h-fit w-fit animate-spin">
-          <SpinnerIcon width={16} height={16} className="text-gray" />
+          <SpinnerIcon aria-hidden="true" width={16} height={16} className="text-gray" />
         </div>
       ) : (
-        <SearchIcon width={16} height={16} className="text-gray" />
+        <SearchIcon aria-hidden="true" width={16} height={16} className="text-gray" />
       )}
     </div>
   );
