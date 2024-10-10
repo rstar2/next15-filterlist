@@ -66,7 +66,7 @@ The ux is still not good here. We are not seeing active tab and the search is do
 
 ### Add a loading spinner to Search.tsx
 
-- Progressive enhancement of the base case search with onChange, add router and searchParams. Using the existing search params because I will be adding more in the next step.
+- Progressive enhancement of the base case search with onChange, add router and searchParams. Add "use client". Using the existing search params because I will be adding more in the next step.
 - Add key to form to reset it between tabs
 - Notice the url is updating later because we are waiting for the await in the table to resolve before routing.
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
