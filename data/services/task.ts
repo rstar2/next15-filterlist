@@ -20,6 +20,9 @@ export async function getTasks(filter?: { q?: string; status?: TaskStatus; categ
         },
       },
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
     where: {
       AND: [
         filter?.q

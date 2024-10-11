@@ -96,9 +96,9 @@ The categories are instant and don't depend in the network. Refreshing the page 
 
 ## Cache() getCategoriesMap in categories.ts
 
-- We are fetching the categories twice for every render - once for the task summary and once for the category filter. (Show console logs 2x.)
+- We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show console logs 2x.
 - We can deduplicate this since it's running in the same render.
-- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. Now it's only run once. (Show console logs 1x.)
+- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. Now it's only run once. Show console logs 1x.
 - The load time is actually reduced by 500ms because the getTaskSummary is reusing the prepared data from the getCategoriesMap called by categoryFilter.
 
 This means that can keep using our common pattern of fetching data inside components, similar to how we would use useQuery in a client side app.

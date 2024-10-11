@@ -68,9 +68,9 @@ const TODOS = [
   {
     categoryId: 0,
     createdAt: new Date('2024-09-03T00:00:00Z'),
-    description: 'Research and implement a CI/CD pipeline for the application',
+    description: 'Implement a CI/CD pipeline for the application',
     projectId: 'b3876ae0-bdbf-4c04-8230-85d3a6da15e9',
-    status: 'todo',
+    status: 'done',
     title: 'Implement CI/CD',
   },
   {
@@ -123,17 +123,17 @@ const TODOS = [
   },
   {
     categoryId: 2,
-    createdAt: new Date('2024-07-03T00:00:00Z'),
+    createdAt: new Date('2024-09-03T00:00:00Z'),
     description: 'Write the documentation for the API endpoints',
     projectId: 'b3876ae0-bdbf-4c04-8230-85d3a6da15e9',
-    status: 'inprogress',
+    status: 'todo',
     title: 'Write API documentation',
   },
   {
     categoryId: 2,
-    createdAt: new Date('2024-07-03T00:00:00Z'),
+    createdAt: new Date('2024-05-03T00:00:00Z'),
     description:
-      'Create the database schema for the application. Use entity-relationship diagrams to model the database schema',
+      'Create the database schema for the application, use entity-relationship diagrams to model the database schema',
     projectId: 'b3876ae0-bdbf-4c04-8230-85d3a6da15e9',
     status: 'inprogress',
     title: 'Create database schema',
@@ -141,7 +141,7 @@ const TODOS = [
   {
     categoryId: 3,
     createdAt: new Date('2024-09-03T00:00:00Z'),
-    description: 'Test the homescreen of the application when the frontend team is done with the implementation',
+    description: 'Test the homescreen of the application',
     projectId: 'b3876ae0-bdbf-4c04-8230-85d3a6da15e9',
     status: 'todo',
     title: 'Test the homescreen',
