@@ -34,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="group flex flex-col gap-10">
           <div className="flex flex-col gap-6">
             <h1>Project information</h1>
+            <h1 className="w-fit">Project information</h1>
             <ProjectInfo />
           </div>
           <div className="flex flex-col gap-6">
