@@ -15,7 +15,7 @@
 - Open pre-run lighthouse screen. Show impact of each by hovering circle.
 - FCP: Bad since we are showing nothing until everything.
 - LCP: Bad, out LCP is shown together with everything else.
-- TBT: 0 since no JS, responsive page, no uncanny valley since default elements.
+- TBT: 0 since no JS, responsive page, no uncanny valley since default elements. INP is 0 since no js.
 - CLS: 0 since everything is painted at once.
 - Speed index bad since it measures incrementally how much content is shown, but we have nothing until everything is shown.
 - Overall metrics are bad but actually not the worst because we have no js to worsen TBT and no moving elements to worsen CLS.
@@ -44,12 +44,12 @@
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
 - The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout.
 - So, let's push the data fetches down from the layout to the components themselves, and show Suspense fallbacks.
-- Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx. Show the result.
-- Suspense around projectDetails with skeleton.
-- Explain making skeletons the right size. If we don't we get CLS which hurts our score badly. Can be hard.
-- Suspense around tabs with skeleton.
+- Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx.
+- Suspense "loading..." around projectDetails with skeleton, and around tabs with tabs.tsx. Show the result.
+- We fixed the FCP and LCP since we are showing content after just 0.5s and not blocking the page. However, did you see how the elements are visually unstable as they load. Open CWV plugin, we got layout shift. CLS is very impactful on our scores.
+- We have to make skeletons the right size, which can be hard. Replace with skeletons.
 - Suspense Search because SearchParams witch skeleton because SearchParams opt into dynamic rendering.
-- Showcase the result.
+- Showcase the result and the score again.
 
 By are pushing data fetching down and displaying fallbacks while streaming in the generated RSC's using minimal js, and utilizing the shared compute load between server and client, we can actually show something on the screen and even interact with what we have (fill search).  All components fetch in parallel in this case since they are independent, reducing total load time. If they did depend on each other, we could have made more levels of suspenses inside each, streaming sequentially. Each component is now responsible for their own data, making them composable. If we turn off the slow the suspense boundaries would be mostly omitted.
 
@@ -111,25 +111,19 @@ This means that can keep using our common pattern of fetching data inside compon
 
 ## Final demo
 
-- Start lighthouse run new window.
 - Interact with tabs and filters while streaming in the server components as they load.
-- Wait for lighthouse:
 - Greatly improved UX. Even though the data fetches are still extremely slow, the app feels super responsive.
 - Search, refresh the page and have the same state.
 - And this is very robust: progressively enhanced, we wont have race conditions because of useTransitions. And there is a low amount of js, using it only where needed, the buttons work with onclick while we are streaming in the server components.
 - No useEffects or useStates in sight. We are making interactive apps without them in this new world of React and Next.js.
 
-## Test lighthouse scores
+## Open CWV plugin: the state of our scores
 
-- FCP is way better since we are seeing content right away.
-- (FCP: FCP is better! After the project details are streamed in we are seeing content.)
-- LCP is also way better because our LCP is the project info.
-- (LCP: The same since its still an unavoidabally slow request of dynamic data. But, it doesnt affect the feel of the app anymore.)
-- (If LCP === project info: 100 score.)
-- TBT: 0 since minimal JS and no long tasks, responsive page, no uncanny valley since default elements. Same as before pretty much.
+- We already had these FCP and LCP from the prevoius steps.
+- FCP is way better since we are seeing content right away after 0.5s.
+- LCP is our project details and its very fast, 0.5s.
 - CLS: Managed 0-0.1 since my skeletons are good, but not perfect and will often be hard to obtain with dynamically sized content.
-- Speed index way better since we show incrementally more content as seen in filmstrip.
-- Greatly improved scores, 100 lighthouse performance even with a 2s second total load time application.
+- INP: very good since minimal JS and no long tasks, responsive page, no uncanny valley since default elements. Same as before pretty much.
 
 ## Improve FCP with Partial Pre-rendering
 
@@ -138,13 +132,11 @@ This means that can keep using our common pattern of fetching data inside compon
 - Turn on partial prerendering in next.config.js. This will allow me to partially render a page or layout as static, also in Next.js 15. Very powerful.
 - Remove the cookies from the data fetch, and remove the suspense around the projectDetails. Show the result: app is frozen again.
 
-## Test lighthouse scores again
+## Review lighthouse scores again
 
 - Open the second tab in new window with pre-run scores.
 - The LCP is our project info and is now greatly reduced because it is static.
-- (Our app is just a little slower in prod, mostly the same.)
-- (FCP is greatly improved because our fist piece of content is static.)
-- (If our LCP was our PPR-d piece we would have a 100 score now.)
-- Speed index is improved since there is more content from the start (filmstrip).
+- Speed index way better since we show incrementally more content as seen in filmstrip.
 - Reload, copy paste new tab: the app is now instantly showing useful content. This can be extremely impactful on a bigger application with larger or slower chunks of static content.
 - We managed to complete our task of improving the bad metrics and maintaining the good metrics, while also making app fast, interactive and user-friendly.
+- Greatly improved scores, 100 lighthouse performance even with a 2s second total load time application.

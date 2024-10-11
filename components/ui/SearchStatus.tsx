@@ -4,14 +4,9 @@ import { SpinnerIcon } from './icons/SpinnerIcon';
 
 export default function SearchStatus({ searching }: { searching: boolean }) {
   return (
-    <div
-      aria-label={searching ? 'Searching...' : 'Search'}
-      aria-live="polite"
-      aria-busy={searching}
-      className="absolute left-4 top-[41px]"
-    >
+    <div className="absolute left-4 top-[41px]">
       {searching ? (
-        <div className="h-fit w-fit animate-spin">
+        <div aria-label="searching..." className="h-fit w-fit animate-spin">
           <SpinnerIcon aria-hidden="true" width={16} height={16} className="text-gray" />
         </div>
       ) : (
