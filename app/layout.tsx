@@ -13,7 +13,6 @@ import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
 import FilterProvider from '@/providers/FilterProvider';
 import { cn } from '@/utils/cn';
-import { GlobalStyles } from './styles';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -27,9 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <head>
-        <GlobalStyles />
-      </head>
       <body className={cn(GeistSans.className, 'flex flex-col px-4 py-16 sm:px-16 xl:px-48 2xl:px-96')}>
         <div className="group flex flex-col gap-10">
           <div className="flex flex-col gap-6">
