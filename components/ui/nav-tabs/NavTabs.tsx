@@ -5,9 +5,5 @@ type Props = {
 };
 
 export default function NavTabs({ children }: Props) {
-  return (
-    <div role="tablist" className="flex gap-6 overflow-auto">
-      {children}
-    </div>
-  );
+  return <div className="flex gap-6 overflow-auto">{children}</div>;
 }

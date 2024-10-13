@@ -25,6 +25,13 @@
             "});"
         ]
     },
+    "optimisticCategories": {
+        "scope": "typescriptreact",
+        "prefix": "optimisticCategories",
+        "body": [
+            "optimisticCategories, setOptimisticCategories"
+        ]
+    },
     "useTransition": {
         "scope": "typescriptreact",
         "prefix": "transition",

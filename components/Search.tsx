@@ -5,22 +5,7 @@ import { useQueryState } from 'nuqs';
 import React, { useTransition } from 'react';
 import { searchParams } from '@/types/searchParams';
 import type { TaskStatus } from '@/types/task';
-import { SearchIcon } from './ui/icons/SearchIcon';
-import { SpinnerIcon } from './ui/icons/SpinnerIcon';
-
-function SearchStatus({ searching }: { searching: boolean }) {
-  return (
-    <div aria-hidden className="absolute left-4 top-[41px]">
-      {searching ? (
-        <div className="h-fit w-fit animate-spin">
-          <SpinnerIcon width={16} height={16} className="text-gray" />
-        </div>
-      ) : (
-        <SearchIcon width={16} height={16} className="text-gray" />
-      )}
-    </div>
-  );
-}
+import SearchStatus from './ui/SearchStatus';
 
 export default function Search() {
   const [isPending, startTransition] = useTransition();

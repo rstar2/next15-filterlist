@@ -59,7 +59,7 @@ export default async function TabPage({ params, searchParams }: PageProps) {
                 <td>{new Date(task.createdAt).toLocaleDateString()}</td>
                 <td>
                   <button aria-label="Options">
-                    <ActionIcon aria-hidden width={20} height={20} />
+                    <ActionIcon aria-hidden="true" width={20} height={20} />
                   </button>
                 </td>
               </tr>

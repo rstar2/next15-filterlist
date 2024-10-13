@@ -8,7 +8,7 @@ input {
 }
 
 h1 {
-  @apply text-3xl;
+  @apply text-4xl leading-[60px];
 }
 
 h2 {

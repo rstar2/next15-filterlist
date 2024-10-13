@@ -7,12 +7,12 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   plugins: [],
-  safelist: ['bg-primary', 'bg-primary-dark', 'bg-primary-darker', 'bg-accent-cyan', 'bg-accent-purple', 'bg-gray'],
+  safelist: ['bg-primary', 'bg-primary-dark', 'bg-primary-darker', 'bg-accent-grayblue', 'bg-accent-purple', 'bg-gray'],
   theme: {
     extend: {
       colors: {
         accent: {
-          cyan: '#2399FA',
+          grayblue: '#4E62A5',
           purple: '#7C23FA',
         },
         gray: {
