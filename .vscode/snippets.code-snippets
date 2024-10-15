@@ -3,10 +3,31 @@
         "scope": "typescriptreact",
         "prefix": "suspense",
         "body": [
-            "<Suspense fallback={${1:${TM_SELECTED_TEXT} }}>",
+            "<Suspense fallback={<${1:} }>",
             "${TM_SELECTED_TEXT}",
             "</Suspense>"
         ],
+    },
+    "importForm": {
+        "scope": "typescriptreact",
+        "prefix": "importForm",
+        "body": [
+            "import Form from 'next/form';"
+        ]
+    },
+    "toggleButton": {
+        "scope": "typescriptreact",
+        "prefix": "toggleButton",
+        "body": [
+            "ToggleButton disabled>Loading...</ToggleButton>"
+        ]
+    },
+    "params": {
+        "scope": "typescriptreact",
+        "prefix": "params",
+        "body": [
+            "const params = useParams();"
+        ]
     },
     "newSearchParams": {
         "scope": "typescriptreact",
@@ -23,6 +44,15 @@
             "router.push(`?${newSearchParams.toString()}`, {",
             "  scroll: false,",
             "});"
+        ]
+    },
+    "tabsProps": {
+        "scope": "typescriptreact",
+        "prefix": "tabsProps",
+        "body": [
+            "type Props = {",
+            "  taskSummaryPromise: Promise<TaskSummary>;",
+            "};"
         ]
     },
     "optimisticCategories": {

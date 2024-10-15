@@ -14,7 +14,7 @@ export default function ToggleButton({
   active,
   ...otherProps
 }: Props & React.HTMLProps<HTMLButtonElement>) {
-  const inactiveClass = 'outline-primary focus:outline-2 bg-white text-black hover:bg-gray-light';
+  const inactiveClass = 'outline-primary focus:outline-2 bg-white text-black hover:enabled:bg-gray-light';
   const activeClass = 'outline-white focus:outline focus:-outline-offset-4 hover:bg-primary-dark bg-primary text-white';
 
   return (

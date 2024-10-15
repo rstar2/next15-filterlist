@@ -16,8 +16,8 @@ import { cn } from '@/utils/cn';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  description: 'Next.js 15 Filter List',
-  title: 'Next.js 15 filtering list example using modern React features',
+  description: 'Next.js 15 filtering list example using modern React features',
+  title: 'Next.js 15 Filter List',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
