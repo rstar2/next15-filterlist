@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { cookies } from 'next/headers';
+import { unstable_noStore } from 'next/cache';
 import { prisma } from '@/db';
 import type { TaskStatus, TaskSummary } from '@/types/task';
 import { slow } from '@/utils/slow';
@@ -9,7 +9,7 @@ import { getCategoriesMap } from './category';
 export async function getTasks(filter?: { q?: string; status?: TaskStatus; categories?: number[] }) {
   console.log('getTasks', filter);
 
-  await cookies();
+  unstable_noStore();
   await slow(2000);
 
   return prisma.task.findMany({
@@ -40,7 +40,7 @@ export async function getTasks(filter?: { q?: string; status?: TaskStatus; categ
 export async function getTaskSummary(): Promise<TaskSummary> {
   console.log('getTaskSummary');
 
-  await cookies();
+  unstable_noStore();
   await slow(1500);
 
   const categoriesMap = await getCategoriesMap();

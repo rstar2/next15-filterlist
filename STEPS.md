@@ -9,10 +9,10 @@
 ## Setup and starting point
 
 - This is a project task manager sort of thing. The designer of my current project Eileen Røsholt has designed the UI, and it's inspired by a feature we made in that project.
-- The setup is of course Next.js App router, prisma and an Azure DB cause its free on my company azure account, tailwind CSS.
+- The setup is of course Next.js App Router, prisma and an Azure DB cause its free on my company azure account, tailwind CSS.
 - Demo app, new tab: Very slow load, slowed down data fetches on purpose.
 - But, it's actually not bad. Try out tabs, try search with a basic form, see the result in the table.
-- This is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, and things work without js.
+- The App Router is server first, and this is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, and things work without js.
 - Good base case, will work even if we are on a device with low processing power that cannot run JS efficiently.
 
 ## Review lighthouse scores
@@ -29,7 +29,7 @@
 ## Go through the code
 
 - Async layout.tsx server component
-- Show the different data files just querying a db and using cookies() and slow()
+- Show the different data files just querying a db, been made dynamic with noStore() and slowed with slow(). (In the future of Next.js as announced on the keynote, this would become dynamic by default and we would rather opt in to static.)
 - Mention each component in the file, children:
 - Async [tab] page.tsx server components, we are querying our db based on filters directly based on the filters inside this server component.
 - Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
@@ -70,9 +70,9 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 
 ### Add a loading spinner to Search.tsx
 
-- Uncomfortable experience in the search.
+- Uncomfortable experience in the search when using the default form submit, which is a GET pushing the values of the inputs inside the form to the URL.
 - Progressive enhancement of the base case search. Let's first use the new Nextjs form component to make this a client side navigation when js is loaded: import, use form and add action.
-- Next enhancement is to add an onChange handler, we want to push to the router. Add router, params, and searchParams.
+- We can also is to add an onChange handler, we want to push to the router. Add router, params, and searchParams.
 - Onchange newSearchParams. We gonna use the existing search params because I will keeping the state in the URL as a single source of truth, because the state of the app will be reloadable, shareable, and bookmarkable.
 - Add defaultvalue and reset with a key.
 - Add "use client".
@@ -91,7 +91,7 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 - Pay attention to the URL. It's not updating until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
 - Let's mark the loading state. Add startTransition around router.push. How can we use this isPending?
 - Show class group in layout, show pseudo-class group-has data-pending in page.tsx.
-- Show the result. Pending feedback while showing stale content instead of nothing.
+- Show the result. Pending feedback while showing stale content instead of nothing with a suspense.
 - Instead of creating a global state manager, we can just use css. Add data-pending=isPending attribute.
 - But i also want responsive buttons, and were gonna use useOptimistic - it is a great tool to handle this. It will take in a state to show no action is pending, which is our "truth" of the url, and return an optimistic value and a trigger function.
 - Add useOptimistic to CategoryFilter.tsx. Set them inside the transition while waiting for the router to resolve. Showcase.
@@ -101,16 +101,15 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 
 ## Cache() getCategoriesMap in categories.ts
 
-- We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show terminal logs 2x.
-- We can deduplicate this since it's running in the same render.
-- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. Pay attention to the load time, refresh.
+- We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show terminal logs 2x. We can reuse the the return value of getCategoriesMap.
+- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
 - The load time is actually reduced by 500ms because the StatusTabs and the CategoryFilter are using the same return value of getCategoriesMap. And you can see it's only run once. Show terminal logs 1x.
-- This means that can keep using our common pattern of fetching data inside components, similar to how we would use for example tanstack query in a client side app.
+- This means that can keep using our pattern of fetching data inside the components themselves, instead of passing the data down from a common parent, maintaining composition. The components all call the same cached data, similar to how we would use for example tanstack query in a client side app.
 
 ## Turn on staleTimes in next.config.js
 
 - Every time we click a tab, filter, or search, we are rerunning the page.tsx table on the server, with the data fetch. We can resuse this, my data doesnt need to be that fresh.
-- Enable staleTimes in next.config.js, (this is a next.js 15 feature). This will cache the rsc payload on the client for the route page.tsx, the table. Refresh page.
+- Enable staleTimes in next.config.js. This will cache the rsc payload on the client for the route page.tsx, the table. Refresh page.
 - Show the result. Click the same twice. Now we dont have to regenerate the server component every time.
 
 ## Final demo
@@ -125,8 +124,8 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 ## Improve Speed Index with Partial Pre-rendering
 
 - We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project details data on every page load even though it very rarely changes.
-- This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache". Wasting resources and time. Static is the fastest.
-- I want to use nextjs (15) partial prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
+- This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache" and its related APIs. Wasting resources and time. Static is the fastest.
+- I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
 - Remove the suspense around the projectDetails, and remove the cookies from the data fetch. Show the result: app is frozen again.
 - Turn on partial prerendering in next.config.js. I need to make a production build, I've already deployed it so we can see it.
 - Open the second tab in new window.
