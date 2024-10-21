@@ -2,7 +2,7 @@
 
 import React, { use, useTransition } from 'react';
 import { useFilters } from '@/providers/FilterProvider';
-import ToggleGroup from './ui/toggle-group/ToggleGroup';
+import ToggleGroup from './ui/ToggleGroup';
 import type { Category } from '@prisma/client';
 
 type Props = {
@@ -18,6 +18,7 @@ export default function CategoryFilter({ categoriesPromise }: Props) {
   return (
     <div data-pending={isPending ? '' : undefined}>
       <ToggleGroup
+        toggleKey="category"
         options={Object.values(categoriesMap).map(category => {
           return {
             label: category.name,
@@ -35,4 +36,8 @@ export default function CategoryFilter({ categoriesPromise }: Props) {
       />
     </div>
   );
+}
+
+export function CategoryFilterSkeleton() {
+  return <div className="w-fit rounded border border-gray px-4 py-2 opacity-50">Loading...</div>;
 }

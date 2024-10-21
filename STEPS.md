@@ -8,11 +8,11 @@
 
 ## Setup and starting point
 
-- This is a project task manager sort of thing. The designer of my current project Eileen Røsholt has designed the UI, and it's inspired by a feature we made in that project.
-- The setup is of course Next.js App Router, prisma and an Azure DB cause its free on my company azure account, tailwind CSS.
+- This is a project task manager demo app. The designer of my current project Eileen Røsholt has designed the UI, and it's inspired by a feature we made in that project.
+- The setup is of course Next.js App Router, prisma and an Azure DB, tailwind CSS.
 - Demo app, new tab: Very slow load, slowed down data fetches on purpose.
 - But, it's actually not bad. Try out tabs, try search with a basic form, see the result in the table.
-- The App Router is server first, and this is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, and things work without js.
+- The App Router is server first, and this is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, and things work without js. We start with web standards first.
 - Good base case, will work even if we are on a device with low processing power that cannot run JS efficiently.
 
 ## Review lighthouse scores
@@ -50,12 +50,11 @@
 - So, let's push the data fetches down from the layout to the components themselves.
 - Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx. Each component is now responsible for their own data, making them composable.
 - Display suspense fallbacks with "loading..." around projectDetails, and around tabs. - Show the result: streaming in the RSCs using just a little js as they complete on the server. Running in parallel, have a lower total load timem and utlitizes the shared compute load between server and client. We can actually show something on the screen and even interact with what we have (fill search).
-- If we turn off the slow the suspense boundaries would be mostly omitted.
+- (If we turn off the slow the suspense boundaries would be mostly omitted).
 - However, did you see how the elements are visually unstable as they load. We got cumulative layout shift. Uncomfortable UX. Open CWV: CLS is no longer 0, and is very impactful on our scores.
 - We have to make loading fallbacks the right size. Replace with skeletons.
 - Open CWV: Showcase the improved CLS. Managed 0-0.1 since my skeletons are good, but not perfect and will often be hard to obtain with dynamically sized content.
 - We also fixed the FCP and LCP since we are showing the project information right away and not blocking the page, and LCP is our FCP which is the project information and its very fast. (Our LCP is still slowed down but greatly improved).
-- Suspense Search because SearchParams witch skeleton because SearchParams opt into dynamic rendering.
 
 ## Improve UX
 
@@ -86,7 +85,7 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 
 ## Add CategoryFilter.tsx to layout.tsx
 
-- Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with a disabled toggle button.
+- Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with correct skeleton.
 - This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we don't see anything happening.
 - Pay attention to the URL. It's not updating until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
 - Let's mark the loading state. Add startTransition around router.push. How can we use this isPending?
@@ -104,7 +103,7 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 - We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show terminal logs 2x. We can reuse the the return value of getCategoriesMap.
 - Add cache() higher order React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
 - The load time is actually reduced by 500ms because the StatusTabs and the CategoryFilter are using the same return value of getCategoriesMap. And you can see it's only run once. Show terminal logs 1x.
-- This means that can keep using our pattern of fetching data inside the components themselves, instead of passing the data down from a common parent, maintaining composition. The components all call the same cached data, similar to how we would use for example tanstack query in a client side app.
+- This means that can keep using our pattern of fetching data inside the components themselves, instead of passing the data down from a common parent, maintaining composition. The components all call the same cached data.
 
 ## Turn on staleTimes in next.config.js
 
@@ -126,10 +125,11 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 - We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project details data on every page load even though it very rarely changes.
 - This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache" and its related APIs. Wasting resources and time. Static is the fastest.
 - I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
-- Remove the suspense around the projectDetails, and remove the cookies from the data fetch. Show the result: app is frozen again.
+
+- Remove the suspense around the projectDetails, suspense Search because SearchParams with skeleton because SearchParams opt into dynamic rendering. Remove the noStore from the data fetch. Show the result: app is frozen again.
 - Turn on partial prerendering in next.config.js. I need to make a production build, I've already deployed it so we can see it.
 - Open the second tab in new window.
-- Cpy paste new tab: the app is now instantly showing useful content. This can be extremely impactful on a bigger application with larger or slower chunks of static content.
+- Copy paste new tab: the app is now instantly showing useful content. This can be extremely impactful on a bigger application with larger or slower chunks of static content.
 - Reload, its just there right away because its static.
 
 ## Review lighthouse scores again

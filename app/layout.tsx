@@ -3,12 +3,11 @@ import './globals.css';
 // eslint-disable-next-line import/no-unresolved
 import { GeistSans } from 'geist/font/sans';
 import { Suspense } from 'react';
-import CategoryFilter from '@/components/CategoryFilter';
+import CategoryFilter, { CategoryFilterSkeleton } from '@/components/CategoryFilter';
 import LoadTimeTracker from '@/components/LoadTimeTracker';
 import ProjectInfo from '@/components/ProjectInfo';
 import Search, { SearchSkeleton } from '@/components/Search';
 import StatusTabs, { StatusTabsSkeleton } from '@/components/StatusTabs';
-import ToggleButton from '@/components/ui/toggle-group/ToggleButton';
 import { getCategoriesMap } from '@/data/services/category';
 import { getTaskSummary } from '@/data/services/task';
 import FilterProvider from '@/providers/FilterProvider';
@@ -44,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Suspense fallback={<SearchSkeleton />}>
                 <Search />
               </Suspense>
-              <Suspense fallback={<ToggleButton disabled>Loading...</ToggleButton>}>
+              <Suspense fallback={<CategoryFilterSkeleton />}>
                 <CategoryFilter categoriesPromise={categories} />
               </Suspense>
             </FilterProvider>
