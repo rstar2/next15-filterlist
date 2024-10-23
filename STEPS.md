@@ -8,12 +8,12 @@
 
 ## Setup and starting point
 
-- This is a project task manager demo app. The designer of my current project Eileen Røsholt has designed the UI, and it's inspired by a feature we made in that project.
+- This is a project task manager demo app. The very talented designer (smile) of my current project Eileen Røsholt has designed the UI, and it's inspired by a feature we made in that project.
 - The setup is of course Next.js App Router, prisma and an Azure DB, tailwind CSS.
 - Demo app, new tab: Very slow load, slowed down data fetches on purpose.
 - But, it's actually not bad. Try out tabs, try search with a basic form, see the result in the table.
-- The App Router is server first, and this is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, and things work without js. We start with web standards first.
-- Good base case, will work even if we are on a device with low processing power that cannot run JS efficiently.
+- The App Router is server first, and this is all server components, which means there is no js shipped to the client for these components. Just html, links and a form, which means things work without js.
+- We start with web standards first, good base case, will work even if we are on a device with low processing power that cannot run JS efficiently.
 
 ## Review lighthouse scores
 
@@ -29,8 +29,8 @@
 ## Go through the code
 
 - Async layout.tsx server component
-- Show the different data files just querying a db, been made dynamic with noStore() and slowed with slow(). (In the future of Next.js as announced on the keynote, this would become dynamic by default and we would rather opt in to static.)
-- Mention each component in the file, children:
+- Show the different data files just querying a db, been made dynamic with noStore() and slowed with slow(). (In the future of Next.js with dynamicIO as announced on the keynote, this would become dynamic by default and we would rather opt in to static.)
+- Mention each component in the file, search and form, children:
 - Async [tab] page.tsx server components, we are querying our db based on filters directly based on the filters inside this server component.
 - Dynamic requests, static is easy because this could be run in the build, but this is dynamic data. We have to await at runtime.
 - Basically, want we want to do is elevate the speed, interactivity and UX of this app, and improve the web vitals that are bad without worsening the good ones.
@@ -48,21 +48,20 @@
 - Layout.tsx fetches are running sequentially even though they don't depend on each other.
 - The first through might be to run them in parallel with promise.all().That would help, but you would still be blocked in the layout.
 - So, let's push the data fetches down from the layout to the components themselves.
-- Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx. Each component is now responsible for their own data, making them composable.
-- Display suspense fallbacks with "loading..." around projectDetails, and around tabs. - Show the result: streaming in the RSCs using just a little js as they complete on the server. Running in parallel, have a lower total load timem and utlitizes the shared compute load between server and client. We can actually show something on the screen and even interact with what we have (fill search).
-- (If we turn off the slow the suspense boundaries would be mostly omitted).
+- Move projectDetails fetch to projectDetails.tsx, and move tabs fetch to tabs.tsx. Each component is now responsible for their own data, making them composable, (by colocating data and ui).
+- Display suspense fallbacks with "loading..." around projectDetails, and around tabs. - Show the result: streaming in the RSCs using just a little js as they complete on the server. Running in parallel, have a lower total load time. We can actually show something on the screen and even interact with what we have (fill search).
 - However, did you see how the elements are visually unstable as they load. We got cumulative layout shift. Uncomfortable UX. Open CWV: CLS is no longer 0, and is very impactful on our scores.
 - We have to make loading fallbacks the right size. Replace with skeletons.
-- Open CWV: Showcase the improved CLS. Managed 0-0.1 since my skeletons are good, but not perfect and will often be hard to obtain with dynamically sized content.
+- Open CWV: Showcase the improved CLS. Managed 0-0.1 since my skeletons are good, but this can be hard to obtain with dynamically sized content.
 - We also fixed the FCP and LCP since we are showing the project information right away and not blocking the page, and LCP is our FCP which is the project information and its very fast. (Our LCP is still slowed down but greatly improved).
 
 ## Improve UX
 
-Let's continue to improve the UX, it is still not good here. We are not seeing active tab and the search is doing a full page reload.
+Let's continue to improve the UX, it is still not good here.
 
 ### Mark active tab and read promise with use in Tabs.tsx
 
-- Let's start by showing the currently active tab. Add useParams and get active tab. Make client component. We cannot have this async now, we have to fetch the data outside. Put the data outside.
+- Let's start by showing the currently active tab. Add useParams and get active tab. Make client component. We cannot have this async now, and we cant access db anyway here, we have to fetch the data outside. Put the data outside.
 - But we don't want to get back to blocking our layout. Lets remove the await and pass it down to the Tabs as a promise.
 - Then we can read the promise with use() which will resolve it, and the component will suspend the same way allowing us to see the fallback.
 - Now we can see the active tabs and navigate between them.
@@ -70,9 +69,9 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 ### Add a loading spinner to Search.tsx
 
 - Uncomfortable experience in the search when using the default form submit, which is a GET pushing the values of the inputs inside the form to the URL.
-- Progressive enhancement of the base case search. Let's first use the new Nextjs form component to make this a client side navigation when js is loaded: import, use form and add action.
+- Progressive enhancement of the base case search. Let's first use the new Nextjs 15 form component to make this a client side navigation when js is loaded: import, use form and add action.
 - We can also is to add an onChange handler, we want to push to the router. Add router, params, and searchParams.
-- Onchange newSearchParams. We gonna use the existing search params because I will keeping the state in the URL as a single source of truth, because the state of the app will be reloadable, shareable, and bookmarkable.
+- Onchange newSearchParams. We gonna use the existing search params because we will keeping the state in the URL as a single source of truth, because the state of the app will be reloadable, shareable, and bookmarkable.
 - Add defaultvalue and reset with a key.
 - Add "use client".
 - Notice the url is updating later because we are waiting for the await in the table to resolve before routing.
@@ -80,30 +79,30 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 - Explain useTransition: mark a state update as non-urgent and non-blocking and get pending state.
 - Use pending state to display user while waiting for the navigation to finish, which is the await in the table component. Reload.
 - Enable the spinner, while we are transitioning, we can see it.
-- When this is hydrated by js, we have the progressive enhcanement of the onchange and the spinner.
+- When this is hydrated by js, we have the progressive enhancement of the onchange and the spinner.
 - (Using a transition also batches the key strokes, leaving only one entry in the history.)
 
 ## Add CategoryFilter.tsx to layout.tsx
 
-- Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with correct skeleton.
+- Add the CategoryFilter component to layout.tsx. It takes in a categories promise and reads it with use. Pass it down with a new data fetch and suspend with correct skeleton, demo load.
 - This component is filtering with searchParams again, using the URL as the state again. However when we click the tabs, we don't see anything happening.
 - Pay attention to the URL. It's not updating until the new table in page.tsx is done with its await query and finished rendering on the server. Therefore we cannot see the active filters right away.
-- Let's mark the loading state. Add startTransition around router.push. How can we use this isPending?
+- Let's mark the loading state. Add startTransition around router.push. How can we use this isPending? Not a lot of options, not suitable for a spinner.
 - Show class group in layout, show pseudo-class group-has data-pending in page.tsx.
-- Show the result. Pending feedback while showing stale content instead of nothing with a suspense.
+- Show the result. Instead of showing nothing i.e using a suspense, we can show stale content and indicate that it's stale.
 - Instead of creating a global state manager, we can just use css. Add data-pending=isPending attribute.
-- But i also want responsive buttons, and were gonna use useOptimistic - it is a great tool to handle this. It will take in a state to show no action is pending, which is our "truth" of the url, and return an optimistic value and a trigger function.
+- But i also want responsive buttons, and were gonna use useOptimistic - it is a great tool to handle this. It will take in a state to show when nothing is pending, which is our "truth" of the url, and return an optimistic value and a trigger function.
 - Add useOptimistic to CategoryFilter.tsx. Set them inside the transition while waiting for the router to resolve. Showcase.
-- UseOptimistic will create a optimistic client state, but then throw away it away after the transition completes. The categories are instant and don't depend in the network.
+- UseOptimistic will create a optimistic state on the client, but then throw away it away after the transition completes. The categories are instant and don't depend in the network.
 - Credit to Sam Selikoff with his post on buildui blog for this pattern.
 - (Batchign again, only updating once we are done selecting, leaving only one entry in the history.)
 
 ## Cache() getCategoriesMap in categories.ts
 
 - We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show terminal logs 2x. We can reuse the the return value of getCategoriesMap.
-- Add cache() higher order React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
+- Add cache() React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
 - The load time is actually reduced by 500ms because the StatusTabs and the CategoryFilter are using the same return value of getCategoriesMap. And you can see it's only run once. Show terminal logs 1x.
-- This means that can keep using our pattern of fetching data inside the components themselves, instead of passing the data down from a common parent, maintaining composition. The components all call the same cached data.
+- Instead of passing the data down from a common parent (hoisting), the components all call the same cached data. This means that can keep using our pattern of fetching data inside the components themselves, maintaining composition.
 
 ## Turn on staleTimes in next.config.js
 
@@ -114,19 +113,19 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 ## Final demo
 
 - See content right away, and interact with tabs while streaming in the server components as they finish rendering on the server. And we have some nice caching here.
-- Reload, even filter while streaming, enable "testing" and "backend".
-- Greatly improved UX. Even though the data fetches are still extremely slow, the app feels super responsive.
+- Reload, even filter before the streaming is complete, enable "testing" and "backend".
 - Search for "api". Reload/share/bookmark the page and have the same state.
+- Greatly improved UX. Even though the data fetches are still extremely slow, the app feels super responsive.
 - And this is very robust: progressively enhanced the no-js base case, and just added a low amount of js, using it only where needed. (No race conditions because of useTransitions batching.)
 - No useEffects or useStates in sight. We are making interactive apps without that in this new world of React Server Components.
 
 ## Improve Speed Index with Partial Pre-rendering
 
-- We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project details data on every page load even though it very rarely changes.
+- We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project info data on every page load even though it very rarely changes.
 - This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache" and its related APIs. Wasting resources and time. Static is the fastest.
 - I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
 
-- Remove the suspense around the projectDetails, suspense Search because SearchParams with skeleton because SearchParams opt into dynamic rendering. Remove the noStore from the data fetch. Show the result: app is frozen again.
+- Remove the suspense around the projectDetails. Remove the noStore from the data fetch. Show the result: app is frozen again. Suspense Search because SearchParams with skeleton because SearchParams opt into dynamic rendering.
 - Turn on partial prerendering in next.config.js. I need to make a production build, I've already deployed it so we can see it.
 - Open the second tab in new window.
 - Copy paste new tab: the app is now instantly showing useful content. This can be extremely impactful on a bigger application with larger or slower chunks of static content.
@@ -138,7 +137,7 @@ Let's continue to improve the UX, it is still not good here. We are not seeing a
 - Again, the LCP and FCP are much improved since the first run because they are both the project information, but we can also see that the speed index improved since we show start off with more content, the project information, before showing incrementally more content, as seen in filmstrip.
 - We can also maintained the TBT of 0, which corresponds to the responsive clicks because we have minimal JS and no long tasks.
 - Maintained 0 CLS because of these skeletons being sized correctly.
-- We have greatly improved performance, getting 95-100 score in lighthouse even with a 2s second total load time application.
+- We have greatly improved performance, getting 99 score in lighthouse even with a 2.3s second total load time application.
 - We managed to complete our task of improving the bad metrics and maintaining the good ones, while also making app fast, interactive and user-friendly.
 
 ## (Conclusion)

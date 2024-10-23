@@ -29,7 +29,7 @@ export default async function TabPage({ params, searchParams }: PageProps) {
   const data = await getTasks({
     categories: Array.isArray(category) ? category.map(Number) : category ? [Number(category)] : undefined,
     q,
-    status: (await params).tab,
+    status: tab,
   });
 
   return (
