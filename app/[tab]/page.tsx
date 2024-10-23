@@ -52,7 +52,7 @@ export default async function TabPage({ params, searchParams }: PageProps) {
                 <td className="font-medium">{task.title}</td>
                 <td>{task.description}</td>
                 <td>
-                  <div className={cn(color, 'flex w-fit justify-center px-3 py-1 text-white')}>
+                  <div className={cn(color, 'flex w-fit justify-center px-3 py-1 text-white dark:text-black')}>
                     {task.category.name}
                   </div>
                 </td>

@@ -7,16 +7,35 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   plugins: [],
-  safelist: ['bg-primary', 'bg-primary-dark', 'bg-primary-darker', 'bg-accent-grayblue', 'bg-accent-purple', 'bg-gray'],
+  safelist: [
+    'bg-primary',
+    'bg-primary-dark',
+    'bg-primary-darker',
+    'bg-accent-grayblue',
+    'bg-accent-purple',
+    'bg-gray',
+    'dark:bg-white',
+    'dark:bg-primary-light',
+    'dark:bg-primary-lighter',
+    'dark:bg-accent-grayblue-light',
+    'dark:bg-accent-purple-light',
+  ],
   theme: {
     extend: {
       colors: {
         accent: {
-          grayblue: '#4E62A5',
-          purple: '#7C23FA',
+          grayblue: {
+            DEFAULT: '#6A7DC2',
+            dark: '#4E62A5',
+          },
+          purple: {
+            DEFAULT: '#7C23FA',
+            dark: '#6A1BFF',
+          },
         },
         gray: {
           DEFAULT: '#9CA3AF',
+          dark: '#374151',
           light: '#E5E7EB',
         },
         primary: {

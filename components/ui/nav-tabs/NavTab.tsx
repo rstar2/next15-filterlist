@@ -15,8 +15,10 @@ export default function NavTab({ href, children, activeTab, tabId, header }: Pro
     <Link
       scroll={false}
       className={cn(
-        activeTab === tabId ? 'border-primary bg-primary-light' : 'border-transparent bg-primary-lighter',
-        'flex w-full min-w-fit flex-col gap-3 border-b-4 p-3 -outline-offset-2 hover:bg-primary-light focus:outline-2 focus:outline-primary sm:gap-6 sm:p-6',
+        activeTab === tabId
+          ? 'border-primary bg-primary-light dark:bg-gray-800'
+          : 'border-transparent bg-primary-lighter dark:bg-gray-900',
+        'flex w-full min-w-fit flex-col gap-3 border-b-4 p-3 -outline-offset-2 hover:bg-primary-light focus:outline-2 focus:outline-primary sm:gap-6 sm:p-6 dark:hover:bg-gray-800',
       )}
       href={href}
     >

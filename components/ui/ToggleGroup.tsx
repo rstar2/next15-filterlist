@@ -17,7 +17,8 @@ type Props = {
 };
 
 export default function ToggleGroup({ options, selectedValues, toggleKey, onToggle }: Props) {
-  const inactiveClass = 'outline-primary focus:outline-2 bg-white text-black hover:bg-gray-light';
+  const inactiveClass =
+    'dark:bg-black dark:text-white dark:outline-white outline-primary focus:outline-2 bg-white text-black hover:bg-gray-light hover:dark:bg-gray-dark';
   const activeClass = 'outline-white focus:outline focus:-outline-offset-4 hover:bg-primary-dark bg-primary text-white';
 
   return (
