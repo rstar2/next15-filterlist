@@ -69,10 +69,11 @@ Let's continue to improve the UX, it is still not good here.
 ### Add a loading spinner to Search.tsx
 
 - Uncomfortable experience in the search when using the default form submit, which is a GET pushing the values of the inputs inside the form to the URL. Full page and cant see active search.
-- Progressive enhancement of the base case search. Let's first use the new Nextjs 15 form component to make this a client side navigation when js is loaded: import, use form and add action.
+- Progressive enhancement of the base case search. Let's first use the new Nextjs 15 form component to make this a client side navigation when js is loaded: import, use form and add action. Root route first and test.
 - We can also is to add an onChange handler, we want to push to the router. Add router, params, and searchParams.
 - Onchange newSearchParams. We gonna use the existing search params because we will keeping the state in the URL as a single source of truth, because the state of the app will be reloadable, shareable, and bookmarkable.
-- Add defaultvalue and reset with a key.
+- Add defaultvalue.
+- Add activetab, use on action and to reset with a key.
 - Add "use client".
 - Notice the url is updating later because we are waiting for the await in the table to resolve before routing.
 - As a user, we want to know that something is happening in the app.
@@ -99,6 +100,7 @@ Let's continue to improve the UX, it is still not good here.
 
 ## Cache() getCategoriesMap in categories.ts
 
+- Let's consider the data fetching in the layout.
 - We are fetching the categories twice for every render - once for the task summary and once for the category filter. Show terminal logs 2x. We can reuse the the return value of getCategoriesMap.
 - Add cache() React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
 - The load time is actually reduced by 500ms because the StatusTabs and the CategoryFilter are using the same return value of getCategoriesMap. And you can see it's only run once. Show terminal logs 1x.
@@ -106,6 +108,7 @@ Let's continue to improve the UX, it is still not good here.
 
 ## Turn on staleTimes in next.config.js
 
+- Enable more caching.
 - Every time we click a tab, filter, or search, we are rerunning the page.tsx table on the server, with the data fetch. We can resuse this, my data doesnt need to be that fresh.
 - Enable staleTimes in next.config.js. This will cache the rsc payload on the client for the route page.tsx, the table. Refresh page.
 - Show the result. Click the same twice. Now we dont have to regenerate the server component every time.
@@ -124,7 +127,6 @@ Let's continue to improve the UX, it is still not good here.
 - We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project info data on every page load even though it very rarely changes.
 - This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache" and its related APIs. Wasting resources and time. Static is the fastest.
 - I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
-
 - Remove the suspense around the projectDetails. Remove the noStore from the data fetch. Show the result: app is frozen again. Suspense Search because SearchParams with skeleton because SearchParams opt into dynamic rendering.
 - Turn on partial prerendering in next.config.js. I need to make a production build, I've already deployed it so we can see it.
 - Open the second tab in new window.

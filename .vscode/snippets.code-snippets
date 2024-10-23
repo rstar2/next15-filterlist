@@ -22,11 +22,12 @@
             "ToggleButton disabled>Loading...</ToggleButton>"
         ]
     },
-    "params": {
+    "activeTab": {
         "scope": "typescriptreact",
-        "prefix": "params",
+        "prefix": "activeTab",
         "body": [
-            "const params = useParams();"
+            "const params = useParams();",
+            "const activeTab = params.tab as TaskStatus;"
         ]
     },
     "newSearchParams": {
