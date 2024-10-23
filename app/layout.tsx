@@ -4,7 +4,7 @@ import './globals.css';
 import { GeistSans } from 'geist/font/sans';
 import { Suspense } from 'react';
 import CategoryFilter, { CategoryFilterSkeleton } from '@/components/CategoryFilter';
-import LoadTimeTracker from '@/components/LoadTimeTracker';
+import LoadTime from '@/components/LoadTime';
 import ProjectInfo from '@/components/ProjectInfo';
 import Search, { SearchSkeleton } from '@/components/Search';
 import StatusTabs, { StatusTabsSkeleton } from '@/components/StatusTabs';
@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Suspense>
           {children}
         </div>
-        <LoadTimeTracker />
+        <LoadTime />
       </body>
     </html>
   );

@@ -14,7 +14,7 @@ export default function Search() {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <Form action={activeTab} className="relative flex w-full flex-col gap-1 sm:w-fit" key={activeTab}>
+    <Form action="" className="relative flex w-full flex-col gap-1 sm:w-fit" key={activeTab}>
       <label className="font-semibold uppercase" htmlFor="search">
         Search
       </label>
