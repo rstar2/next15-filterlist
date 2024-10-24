@@ -8,7 +8,7 @@ body {
 
 textarea,
 input {
-  @apply disabled:dark:bg-gray-dark m-0 border border-gray bg-white p-2 px-3 shadow-sm outline-none focus:outline focus:-outline-offset-1 focus:outline-primary disabled:bg-gray-100 dark:bg-black;
+  @apply m-0 border border-gray bg-white p-2 px-3 shadow-sm outline-none focus:outline focus:-outline-offset-1 focus:outline-primary disabled:bg-gray-100 dark:bg-black disabled:dark:bg-neutral-800;
 }
 
 h1 {
@@ -24,15 +24,15 @@ h3 {
 }
 
 table {
-  @apply dark:border-gray-dark w-full border-collapse border-spacing-0 border border-gray-light;
+  @apply w-full border-collapse border-spacing-0 border border-gray-light dark:border-gray-dark;
 }
 
 tr {
-  @apply dark:border-gray-dark w-full border-b border-gray-light;
+  @apply w-full border-b border-gray-light dark:border-gray-dark;
 }
 
 th {
-  @apply dark:border-gray-dark text-nowrap border-b border-gray-light bg-gray-50 px-4 py-2 text-left font-medium uppercase dark:bg-neutral-800;
+  @apply text-nowrap border-b border-gray-light bg-gray-50 px-4 py-2 text-left font-medium uppercase dark:border-gray-dark dark:bg-neutral-800;
 }
 
 th:not(:first-child):not(:last-child) {

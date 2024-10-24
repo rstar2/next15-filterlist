@@ -39,7 +39,7 @@
 
 - Lets improve the UX of these tabs.
 - Tabs are navigating but very slowly, because we are waiting for the await for the table data in page.tsx to finish.
-- Suspense will allow us to mark something as lower priority and non-blocking, and show a fallback while waiting for finish, and then stream it in.
+- Suspense will allow us to mark a server component as non-urgent, and show a fallback while waiting for finish, and then stream it in.
 - Let's unblock the page.tsx by adding loading.tsx inside /[tab] to create an implicit suspense boundary. Now it can navigate instantly. Go to "todo" tab.
 
 ## Improve data fetching in layout.tsx
@@ -117,7 +117,7 @@ Let's continue to improve the UX, it is still not good here.
 
 - See content right away, and interact with tabs while streaming in the server components as they finish rendering on the server. And we have some nice caching here.
 - Reload, even filter before the streaming is complete, enable "testing" and "backend".
-- Search for "api". Reload/share/bookmark the page and have the same state.
+- Search for "api", spinner. Enable/disable filter, see that my content is stale. Reload/share/bookmark the page and have the same state.
 - Greatly improved UX. Even though the data fetches are still extremely slow, the app feels super responsive.
 - And this is very robust: progressively enhanced the no-js base case, and just added a low amount of js, using it only where needed. (No race conditions because of useTransitions batching.)
 - No useEffects or useStates in sight. We are making interactive apps without that in this new world of React Server Components.
