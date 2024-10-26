@@ -3,7 +3,9 @@ import { getProject } from '@/data/services/project';
 import Skeleton from './ui/Skeleton';
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="w-fit bg-black px-2 py-1 uppercase text-white">{children}</span>;
+  return (
+    <span className="w-fit bg-black px-2 py-1 uppercase text-white dark:bg-white dark:text-black">{children}</span>
+  );
 }
 
 function Info({ label, value }: { label: string; value: string }) {
@@ -40,7 +42,7 @@ export default async function ProjectInfo() {
         <span className="font-bold">Deliverables</span>
         {project.deliverables.split(';').map(deliverable => {
           return (
-            <span key={deliverable} className="w-fit bg-black px-2 py-1 text-white">
+            <span key={deliverable} className="w-fit bg-black px-2 py-1 text-white dark:bg-white dark:text-black">
               {deliverable}
             </span>
           );

@@ -2,9 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-white text-black dark:bg-black dark:text-white;
+}
+
 textarea,
 input {
-  @apply m-0 border border-gray bg-white p-2 px-3 shadow-sm outline-none focus:outline focus:-outline-offset-1 focus:outline-primary disabled:bg-gray-100;
+  @apply m-0 border border-gray bg-white p-2 px-3 shadow-sm outline-none focus:outline focus:-outline-offset-1 focus:outline-primary disabled:bg-gray-100 dark:bg-black disabled:dark:bg-neutral-800;
 }
 
 h1 {
@@ -20,15 +24,15 @@ h3 {
 }
 
 table {
-  @apply w-full border-collapse border-spacing-0 border border-gray-light;
+  @apply w-full border-collapse border-spacing-0 border border-gray-light dark:border-gray-dark;
 }
 
 tr {
-  @apply w-full border-b border-gray-light;
+  @apply w-full border-b border-gray-light dark:border-gray-dark;
 }
 
 th {
-  @apply text-nowrap border-b border-gray-light bg-gray-50 px-4 py-2 text-left font-medium uppercase;
+  @apply text-nowrap border-b border-gray-light bg-gray-50 px-4 py-2 text-left font-medium uppercase dark:border-gray-dark dark:bg-neutral-800;
 }
 
 th:not(:first-child):not(:last-child) {
@@ -40,20 +44,20 @@ td {
 }
 
 .skeleton-animation {
-  background: rgba(130, 130, 130, 0.2);
+  background: rgba(200, 200, 200, 0.2);
   background: -webkit-gradient(
     linear,
     left top,
     right top,
-    color-stop(8%, rgba(130, 130, 130, 0.2)),
-    color-stop(18%, rgba(130, 130, 130, 0.3)),
-    color-stop(33%, rgba(130, 130, 130, 0.2))
+    color-stop(8%, rgba(180, 180, 180, 0.2)),
+    color-stop(18%, rgba(200, 200, 200, 0.3)),
+    color-stop(33%, rgba(200, 200, 200, 0.2))
   );
   background: linear-gradient(
     to right,
-    rgba(130, 130, 130, 0.2) 8%,
-    rgba(130, 130, 130, 0.3) 18%,
-    rgba(130, 130, 130, 0.2) 33%
+    rgba(180, 180, 180, 0.2) 8%,
+    rgba(200, 200, 200, 0.3) 18%,
+    rgba(200, 200, 200, 0.2) 33%
   );
   background-size: 800px 100px;
   animation: wave-lines 2s infinite ease-out;

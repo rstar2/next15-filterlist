@@ -1,5 +1,6 @@
 'use client';
 
+import Form from 'next/form';
 import { useParams } from 'next/navigation';
 import { useQueryState } from 'nuqs';
 import React, { useTransition } from 'react';
@@ -8,6 +9,8 @@ import type { TaskStatus } from '@/types/task';
 import SearchStatus from './ui/SearchStatus';
 
 export default function Search() {
+  const params = useParams();
+  const activeTab = params.tab as TaskStatus;
   const [isPending, startTransition] = useTransition();
   const [q, setQ] = useQueryState(
     'q',
@@ -16,14 +19,14 @@ export default function Search() {
       startTransition,
     }),
   );
-  const params = useParams();
 
   return (
-    <form className="relative flex w-full flex-col gap-1 sm:w-fit" key={params.tab as TaskStatus}>
+    <Form action="" className="relative flex w-full flex-col gap-1 sm:w-fit" key={activeTab}>
       <label className="font-semibold uppercase" htmlFor="search">
         Search
       </label>
       <input
+        autoComplete="off"
         id="search"
         onChange={e => {
           setQ(e.target.value);
@@ -35,7 +38,7 @@ export default function Search() {
         type="search"
       />
       <SearchStatus searching={isPending} />
-    </form>
+    </Form>
   );
 }
 
