@@ -2,7 +2,7 @@
 
 An interactive, progressively enhanced project task manager with filtering using Next.js 15 with Tailwind CSS and Prisma. It's been purposely slowed down to showcase the handling of loading state.
 
-See `filter-provider` branch for a context API version, which batches all filters into a single state, fixing the problem of them being discarded when toggling across multiple.
+<!-- See `filter-provider` branch for a context API version, which batches all filters into a single state, fixing the problem of them being discarded when toggling across multiple. -->
 
 <!-- See `nuqs` branch for a version using [nuqs](https://nuqs.47ng.com/) to accomplish the same thing. -->
 
