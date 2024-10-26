@@ -6,7 +6,7 @@ import { searchParamsCache } from '@/types/searchParams';
 import { taskStatusSchema, type TaskStatus } from '@/types/task';
 import { cn } from '@/utils/cn';
 import { getCategoryColor } from '@/utils/getCategoryColor';
-import type { SearchParams } from 'nuqs/parsers';
+import type { SearchParams } from 'nuqs/server';
 
 type PageProps = {
   params: Promise<{
