@@ -105,6 +105,7 @@ Let's continue to improve the UX, it is still not good here.
 - Add cache() React 19 function to getCategoriesMap in categories.ts. This enables per-render caching. Pay attention to the load time, refresh.
 - The load time is actually reduced by 500ms because the StatusTabs and the CategoryFilter are using the same return value of getCategoriesMap. And you can see it's only run once. Show terminal logs 1x.
 - Instead of passing the data down from a common parent (hoisting), the components all call the same cached data. This means that can keep using our pattern of fetching data inside the components themselves, maintaining composition.
+- Also useful when generating dynamic metadata
 
 ## Turn on staleTimes in next.config.js
 
@@ -126,7 +127,7 @@ Let's continue to improve the UX, it is still not good here.
 
 - We can still improve the speed. Show project details in layout. Actually, we are dynamically fetching this project info data on every page load even though it very rarely changes.
 - This could be static data that we can revalidate on a time based interval using for example fetch options, or, the new Next.js directive "use cache" and its related APIs. Wasting resources and time. Static is the fastest.
-- I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries.
+- I want to use Partial Prerendering. This will allow me to partially the layout as static - everything not inside suspense boundaries. (In the future, that would be determined with "use cache")
 - Remove the suspense around the projectDetails. Remove the noStore from the data fetch. Show the result: app is frozen again. Suspense Search because SearchParams with skeleton because SearchParams opt into dynamic rendering.
 - Turn on partial prerendering in next.config.js. I need to make a production build, I've already deployed it so we can see it.
 - Open the second tab in new window.
