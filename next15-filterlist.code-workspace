@@ -37,6 +37,16 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit",
     },
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#210399",
+        "titleBar.activeBackground": "#2E04D6",
+        "titleBar.activeForeground": "#FBFAFF"
+    },
   },
 }
